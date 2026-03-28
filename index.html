@@ -509,9 +509,10 @@ function doLogout() {
 // ===== Firestore Listeners =====
 function startListening() {
   setSyncing(true);
+  const uid = currentUser.uid;
 
-  // الحوالات — مشتركة بين الجميع
-  unsubscribeEntries = db.collection('entries')
+  // الحوالات — خاصة بكل مستخدم
+  unsubscribeEntries = db.collection('users').doc(uid).collection('entries')
     .orderBy('createdAt', 'asc')
     .onSnapshot(snap => {
       entries = snap.docs.map(d => ({id: d.id, ...d.data()}));
@@ -519,20 +520,21 @@ function startListening() {
       setSyncing(false);
     });
 
-  // الفترات
-  unsubscribePeriods = db.collection('periods')
+  // الفترات — خاصة بكل مستخدم
+  unsubscribePeriods = db.collection('users').doc(uid).collection('periods')
     .orderBy('closedAt', 'desc')
     .onSnapshot(snap => {
       periods = snap.docs.map(d => ({id: d.id, ...d.data()}));
       renderPeriods();
     });
 
-  // الرصيد المُرحَّل
-  db.collection('settings').doc('carried').onSnapshot(doc => {
-    carriedBalance = doc.exists ? doc.data() : null;
-    renderCarried();
-    render();
-  });
+  // الرصيد المُرحَّل — خاص بكل مستخدم
+  db.collection('users').doc(uid).collection('settings').doc('carried')
+    .onSnapshot(doc => {
+      carriedBalance = doc.exists ? doc.data() : null;
+      renderCarried();
+      render();
+    });
 }
 
 function setSyncing(v) {
@@ -575,6 +577,10 @@ function previewCalc() {
 }
 
 // ===== CRUD =====
+function userRef() {
+  return db.collection('users').doc(currentUser.uid);
+}
+
 async function addEntry() {
   const merchant=document.getElementById('f-merchant').value;
   const currency=document.getElementById('f-currency').value;
@@ -590,7 +596,7 @@ async function addEntry() {
   }
   setSyncing(true);
   const userName = userNames[currentUser.email] || currentUser.email.split('@')[0];
-  await db.collection('entries').add({
+  await userRef().collection('entries').add({
     merchant, currency, amount, date, note,
     expr:/[+\-*/]/.test(raw)?raw:null,
     customRate:(!isNaN(cr)&&cr>0)?cr:null,
@@ -606,7 +612,7 @@ async function addEntry() {
 async function deleteEntry(id) {
   if(!confirm('تأكيد الحذف؟')) return;
   setSyncing(true);
-  await db.collection('entries').doc(id).delete();
+  await userRef().collection('entries').doc(id).delete();
 }
 
 function openEdit(id) {
@@ -632,7 +638,7 @@ async function saveEdit() {
   }
   const cr=parseFloat(String(document.getElementById('e-rate').value).replace(',','.'));
   setSyncing(true);
-  await db.collection('entries').doc(editingId).update({
+  await userRef().collection('entries').doc(editingId).update({
     merchant:document.getElementById('e-merchant').value,
     currency:document.getElementById('e-currency').value,
     amount, date:document.getElementById('e-date').value,
@@ -694,8 +700,7 @@ async function confirmClosePeriod() {
   const who=diff>0?'أيمن':diff<0?'ميرسي':'متساوي';
   const batch = db.batch();
 
-  // حفظ الفترة
-  const periodRef = db.collection('periods').doc();
+  const periodRef = userRef().collection('periods').doc();
   batch.set(periodRef, {
     name, tA, tM, diff, bdA, bdM,
     count:entries.length,
@@ -704,13 +709,11 @@ async function confirmClosePeriod() {
     closedAt: firebase.firestore.FieldValue.serverTimestamp()
   });
 
-  // حذف الحوالات الحالية
   entries.forEach(e => {
-    batch.delete(db.collection('entries').doc(e.id));
+    batch.delete(userRef().collection('entries').doc(e.id));
   });
 
-  // الرصيد المُرحَّل
-  const carriedRef = db.collection('settings').doc('carried');
+  const carriedRef = userRef().collection('settings').doc('carried');
   if(!settleChoice && Math.abs(diff) > 0) {
     batch.set(carriedRef, {amount: Math.abs(diff), who});
   } else {
@@ -725,7 +728,7 @@ async function confirmClosePeriod() {
 async function resetAll() {
   if(!confirm('تأكيد التصفير؟ سيتم حذف جميع البيانات الحالية ⚠️')) return;
   const batch = db.batch();
-  entries.forEach(e => batch.delete(db.collection('entries').doc(e.id)));
+  entries.forEach(e => batch.delete(userRef().collection('entries').doc(e.id)));
   setSyncing(true);
   await batch.commit();
 }
