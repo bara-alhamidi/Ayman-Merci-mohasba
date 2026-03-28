@@ -392,17 +392,14 @@ tr:hover td{background:rgba(255,255,255,0.02);}
       </div>
     </div>
     <div class="debt-main">
-      <!-- أسعار الصرف للديون -->
-      <div class="section-title">أسعار الصرف (مقابل الريال السعودي)</div>
-      <div class="rates-grid" style="margin-bottom:16px;">
-        <div class="rate-card"><div class="currency-name">🇸🇦 ريال SAR</div><label>أساسية</label><div class="equiv" style="margin-top:8px;font-size:0.85rem;color:var(--text);font-weight:700;">1 SAR = 1 SAR</div></div>
-        <div class="rate-card"><div class="currency-name">💵 دولار USD</div><label>1 USD =</label><input type="number" id="d-rate-USD" value="3.84" step="0.001" oninput="renderDebtors()"></div>
-        <div class="rate-card"><div class="currency-name">🇶🇦 ريال QAR</div><label>1 QAR =</label><input type="number" id="d-rate-QAR" value="1.021" step="0.001" oninput="renderDebtors()"></div>
-        <div class="rate-card"><div class="currency-name">🇴🇲 ريال OMR</div><label>1 OMR =</label><input type="number" id="d-rate-OMR" value="9.67" step="0.001" oninput="renderDebtors()"></div>
-        <div class="rate-card"><div class="currency-name">🇰🇼 دينار KWD</div><label>1 KWD =</label><input type="number" id="d-rate-KWD" value="12.27" step="0.001" oninput="renderDebtors()"></div>
-        <div class="rate-card"><div class="currency-name">🇦🇪 درهم AED</div><label>1 AED =</label><input type="number" id="d-rate-AED" value="1.032" step="0.001" oninput="renderDebtors()"></div>
+      <!-- hidden rate inputs -->
+      <div style="display:none;">
+        <input type="number" id="d-rate-USD" value="3.84">
+        <input type="number" id="d-rate-QAR" value="1.021">
+        <input type="number" id="d-rate-OMR" value="9.67">
+        <input type="number" id="d-rate-KWD" value="12.27">
+        <input type="number" id="d-rate-AED" value="1.032">
       </div>
-
       <!-- إجمالي الديون -->
       <div class="total-debt-banner" id="total-debt-banner">
         <div class="tdb-item"><div class="tdb-label">إجمالي الديون</div><div class="tdb-val" id="tdb-total" style="color:var(--negative);">0 ريال</div></div>
@@ -586,16 +583,19 @@ function startListening(){
     carriedBalance=doc.exists?doc.data():null;
     renderCarried(); renderLedger();
   });
-  // Debtors
-  unsubs.push(userRef().collection('debtors').orderBy('createdAt','asc').onSnapshot(async snap=>{
-    const list=[];
-    for(const d of snap.docs){
-      const txSnap=await userRef().collection('debtors').doc(d.id).collection('transactions').orderBy('createdAt','asc').get();
-      const txs=txSnap.docs.map(t=>({id:t.id,...t.data()}));
-      list.push({id:d.id,...d.data(),transactions:txs});
-    }
-    debtors=list;
-    renderDebtors();
+  // Debtors - real-time with subcollection
+  unsubs.push(userRef().collection('debtors').orderBy('createdAt','asc').onSnapshot(snap=>{
+    const debtorDocs = snap.docs.map(d=>({id:d.id,...d.data(),transactions:[]}));
+    let loaded = 0;
+    if(debtorDocs.length === 0){ debtors=[]; renderDebtors(); return; }
+    debtorDocs.forEach((d,i)=>{
+      userRef().collection('debtors').doc(d.id).collection('transactions')
+        .orderBy('createdAt','asc').onSnapshot(txSnap=>{
+          debtorDocs[i].transactions = txSnap.docs.map(t=>({id:t.id,...t.data()}));
+          loaded++;
+          if(loaded >= debtorDocs.length){ debtors=[...debtorDocs]; renderDebtors(); }
+        });
+    });
   }));
 }
 
