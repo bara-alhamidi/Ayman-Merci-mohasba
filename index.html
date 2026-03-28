@@ -991,7 +991,7 @@ function renderDebtors(){
           </div>
         </div>
         <div class="debtor-totals">
-          <div class="debtor-total-sar ${isPaid?'paid'}">${isPaid?'✅ مسدد':fmt(total)+' ريال'}</div>
+          <div class="debtor-total-sar ${isPaid?'paid':''}">${isPaid?'✅ مسدد':fmt(total)+' ريال'}</div>
           <div class="debtor-total-usd">${isPaid?'':('≈ $'+fmt(totalUSD))}</div>
         </div>
       </div>
