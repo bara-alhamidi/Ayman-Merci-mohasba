@@ -400,11 +400,33 @@ tr:hover td{background:rgba(255,255,255,0.02);}
         <input type="number" id="d-rate-KWD" value="12.27">
         <input type="number" id="d-rate-AED" value="1.032">
       </div>
+
+      <!-- أسعار الصرف قابلة للطي -->
+      <div style="margin-bottom:14px;">
+        <button onclick="toggleDebtRates()" id="rates-toggle-btn" class="hbtn" style="background:transparent;color:var(--muted);border-color:var(--border);width:100%;text-align:right;padding:8px 12px;">⚙️ أسعار الصرف (مقابل الريال السعودي) ▼</button>
+        <div id="debt-rates-panel" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px;margin-top:6px;">
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;">
+            <div class="rate-card"><div class="currency-name">💵 USD</div><label>1 USD =</label><input type="number" id="d-rate-USD" value="3.84" step="0.001" oninput="renderDebtors()"></div>
+            <div class="rate-card"><div class="currency-name">🇦🇪 AED</div><label>1 AED =</label><input type="number" id="d-rate-AED" value="1.032" step="0.001" oninput="renderDebtors()"></div>
+            <div class="rate-card"><div class="currency-name">🇶🇦 QAR</div><label>1 QAR =</label><input type="number" id="d-rate-QAR" value="1.021" step="0.001" oninput="renderDebtors()"></div>
+            <div class="rate-card"><div class="currency-name">🇰🇼 KWD</div><label>1 KWD =</label><input type="number" id="d-rate-KWD" value="12.27" step="0.001" oninput="renderDebtors()"></div>
+            <div class="rate-card"><div class="currency-name">🇴🇲 OMR</div><label>1 OMR =</label><input type="number" id="d-rate-OMR" value="9.67" step="0.001" oninput="renderDebtors()"></div>
+          </div>
+        </div>
+      </div>
       <!-- إجمالي الديون -->
       <div class="total-debt-banner" id="total-debt-banner">
         <div class="tdb-item"><div class="tdb-label">إجمالي الديون</div><div class="tdb-val" id="tdb-total" style="color:var(--negative);">0 ريال</div></div>
         <div class="tdb-item"><div class="tdb-label">بالدولار</div><div class="tdb-val" id="tdb-usd" style="color:var(--negative);">$0.00</div></div>
         <div class="tdb-item"><div class="tdb-label">عدد المدينين</div><div class="tdb-val" id="tdb-count" style="color:var(--text);">0</div></div>
+      </div>
+
+      <!-- ترتيب -->
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+        <span style="font-size:0.75rem;color:var(--muted);font-weight:600;align-self:center;">ترتيب:</span>
+        <button onclick="setSortDebt('name')" id="sort-name" class="hbtn" style="background:var(--ayman-dim);color:var(--ayman);border-color:var(--ayman);">الاسم أ-ي</button>
+        <button onclick="setSortDebt('amount')" id="sort-amount" class="hbtn" style="background:transparent;color:var(--muted);border-color:var(--border);">الأعلى مبلغاً</button>
+        <button onclick="setSortDebt('date')" id="sort-date" class="hbtn" style="background:transparent;color:var(--muted);border-color:var(--border);">آخر تعديل</button>
       </div>
 
       <div id="debtors-list"></div>
@@ -958,8 +980,20 @@ function renderDebtors(){
     document.getElementById('tdb-count').textContent='0';
     return;
   }
+
+  // ترتيب
+  const sorted = [...debtors].sort((a,b)=>{
+    if(debtSortBy==='name') return a.name.localeCompare(b.name,'ar');
+    if(debtSortBy==='amount') return calcDebtorTotal(b.transactions||[]) - calcDebtorTotal(a.transactions||[]);
+    if(debtSortBy==='date'){
+      const aT=a.transactions?.length?a.transactions[a.transactions.length-1].createdAt?.seconds||0:0;
+      const bT=b.transactions?.length?b.transactions[b.transactions.length-1].createdAt?.seconds||0:0;
+      return bT-aT;
+    }
+    return 0;
+  });
   let grandTotal=0;
-  list.innerHTML=debtors.map(d=>{
+  list.innerHTML=sorted.map(d=>{
     const total=calcDebtorTotal(d.transactions||[]);
     grandTotal+=Math.max(total,0);
     const totalUSD=total/usdRate;
@@ -981,6 +1015,20 @@ function renderDebtors(){
     }).join('');
     const totalDebt=(d.transactions||[]).filter(t=>t.type==='debt').reduce((s,t)=>s+toSAR(t.amount,t.currency),0);
     const totalPaid=(d.transactions||[]).filter(t=>t.type==='payment').reduce((s,t)=>s+toSAR(t.amount,t.currency),0);
+
+    // تجميع العملات الأصلية
+    const origCurrencies={};
+    (d.transactions||[]).forEach(tx=>{
+      if(!origCurrencies[tx.currency]) origCurrencies[tx.currency]={debt:0,payment:0};
+      if(tx.type==='debt') origCurrencies[tx.currency].debt+=tx.amount;
+      else origCurrencies[tx.currency].payment+=tx.amount;
+    });
+    const origLines = Object.entries(origCurrencies).map(([cur,v])=>{
+      const net=v.debt-v.payment;
+      if(net<=0) return '';
+      return `<div style="font-size:0.95rem;font-weight:800;color:var(--negative);direction:ltr;">${fmt(net)} ${cur}</div>`;
+    }).filter(Boolean).join('');
+
     return `<div class="debtor-card">
       <div class="debtor-header" onclick="toggleDebtor('${d.id}')">
         <div class="debtor-info">
@@ -991,8 +1039,10 @@ function renderDebtors(){
           </div>
         </div>
         <div class="debtor-totals">
-          <div class="debtor-total-sar ${isPaid?'paid':''}">${isPaid?'✅ مسدد':fmt(total)+' ريال'}</div>
-          <div class="debtor-total-usd">${isPaid?'':('≈ $'+fmt(totalUSD))}</div>
+          ${isPaid
+            ? `<div class="debtor-total-sar paid">✅ مسدد</div>`
+            : `${origLines}<div style="font-size:0.75rem;color:var(--muted);direction:ltr;margin-top:2px;">${fmt(total)} ريال</div>`
+          }
         </div>
       </div>
       <div class="debtor-body" id="body-${d.id}">
@@ -1021,6 +1071,26 @@ function renderDebtors(){
 function toggleDebtor(id){
   const b=document.getElementById('body-'+id);
   b.classList.toggle('open');
+}
+
+function toggleDebtRates(){
+  const panel=document.getElementById('debt-rates-panel');
+  const btn=document.getElementById('rates-toggle-btn');
+  const open=panel.style.display==='none';
+  panel.style.display=open?'block':'none';
+  btn.textContent='⚙️ أسعار الصرف (مقابل الريال السعودي) '+(open?'▲':'▼');
+}
+
+let debtSortBy = 'name';
+
+function setSortDebt(by){
+  debtSortBy = by;
+  ['name','amount','date'].forEach(k=>{
+    const btn=document.getElementById('sort-'+k);
+    if(k===by){ btn.style.background='var(--ayman-dim)';btn.style.color='var(--ayman)';btn.style.borderColor='var(--ayman)'; }
+    else{ btn.style.background='transparent';btn.style.color='var(--muted)';btn.style.borderColor='var(--border)'; }
+  });
+  renderDebtors();
 }
 
 // ===== MODAL =====
