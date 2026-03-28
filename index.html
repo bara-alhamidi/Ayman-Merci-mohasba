@@ -138,6 +138,7 @@
 <div class="header">
   <h1>جرد <span>الحوالات</span></h1>
   <div style="display:flex;gap:8px;align-items:center;">
+    <button onclick="resetAll()" style="background:rgba(239,68,68,0.15);color:var(--negative);border:1px solid var(--negative);border-radius:8px;padding:6px 14px;font-family:'Tajawal',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;">🗑️ تصفير</button>
     <button class="btn-print" onclick="printReport()" style="background:rgba(245,158,11,0.15);color:var(--merci);border:1px solid var(--merci);border-radius:8px;padding:6px 16px;font-family:'Tajawal',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;">🖨️ تصدير PDF</button>
     <span class="badge badge-ayman">أيمن</span>
     <span class="badge badge-merci">ميرسي</span>
@@ -457,6 +458,13 @@
   }
 
   document.getElementById('edit-modal').addEventListener('click',function(ev){if(ev.target===this)closeModal();});
+  function resetAll() {
+    if (!confirm('تأكيد التصفير؟ سيتم حذف جميع البيانات نهائياً ⚠️')) return;
+    entries = [];
+    save();
+    render();
+  }
+
   function printReport() {
     const now = new Date();
     document.getElementById('print-date').textContent =
