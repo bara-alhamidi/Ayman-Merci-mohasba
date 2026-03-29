@@ -12,11 +12,12 @@
   --ayman-dim:rgba(59,130,246,0.12);--merci-dim:rgba(245,158,11,0.12);
   --text:#e2e8f0;--muted:#64748b;--positive:#22c55e;--negative:#ef4444;
   --debt:#a855f7;--debt-dim:rgba(168,85,247,0.12);
+  --ledger:#06b6d4;--ledger-dim:rgba(6,182,212,0.12);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--text);font-family:'Tajawal',sans-serif;min-height:100vh;}
 
-/* ===== LOGIN ===== */
+/* LOGIN */
 #login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
 .login-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:36px 32px;width:100%;max-width:380px;}
 .login-logo{text-align:center;margin-bottom:28px;}
@@ -30,20 +31,20 @@ body{background:var(--bg);color:var(--text);font-family:'Tajawal',sans-serif;min
 .btn-login{width:100%;padding:12px;border-radius:10px;border:none;background:var(--ayman);color:#fff;font-family:'Tajawal',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;margin-top:8px;}
 .login-error{color:var(--negative);font-size:0.82rem;text-align:center;margin-top:10px;display:none;}
 
-/* ===== APP ===== */
+/* APP */
 #app-screen{display:none;}
 .header{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
 .header-left h1{font-size:1.1rem;font-weight:800;}
 .header-left h1 span{color:var(--ayman);}
 .welcome{font-size:0.78rem;color:var(--muted);}
 .welcome strong{color:var(--positive);}
-.hbtns{display:flex;gap:6px;align-items:center;}
+.hbtns{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
 .hbtn{border-radius:8px;padding:5px 12px;font-family:'Tajawal',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;border:1px solid;}
 .sync-dot{width:8px;height:8px;border-radius:50%;background:var(--positive);display:inline-block;margin-right:4px;}
 .sync-dot.syncing{background:var(--merci);animation:pulse 1s infinite;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
 
-/* ===== HOME ===== */
+/* HOME */
 #home-screen{padding:30px 20px;max-width:700px;margin:0 auto;}
 .home-welcome{text-align:center;margin-bottom:36px;}
 .home-welcome h2{font-size:1.6rem;font-weight:800;margin-bottom:6px;}
@@ -51,15 +52,14 @@ body{background:var(--bg);color:var(--text);font-family:'Tajawal',sans-serif;min
 .home-welcome p{font-size:0.88rem;color:var(--muted);}
 .home-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 .home-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 24px;cursor:pointer;transition:all 0.2s;text-align:center;}
-.home-card:hover{border-color:var(--ayman);transform:translateY(-2px);}
+.home-card:hover{border-color:var(--ledger);transform:translateY(-2px);}
+.home-card.debt-card:hover{border-color:var(--debt);}
 .home-card .card-icon{font-size:2.5rem;margin-bottom:12px;}
 .home-card h3{font-size:1.1rem;font-weight:700;margin-bottom:6px;}
 .home-card p{font-size:0.8rem;color:var(--muted);line-height:1.5;}
-.home-card.debt-card:hover{border-color:var(--debt);}
 
-/* ===== SECTIONS ===== */
-#ledger-screen,#debt-screen{display:none;}
-.section-header{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:10px;}
+/* SECTION HEADER */
+.section-header{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
 .btn-back{background:none;border:none;color:var(--muted);cursor:pointer;font-size:0.85rem;font-family:'Tajawal',sans-serif;padding:4px 10px;border-radius:6px;}
 .btn-back:hover{color:var(--text);background:var(--border);}
 .section-header h2{font-size:1rem;font-weight:700;flex:1;}
@@ -68,7 +68,21 @@ body{background:var(--bg);color:var(--text);font-family:'Tajawal',sans-serif;min
 .main{padding:16px 20px;max-width:1200px;margin:0 auto;}
 .section-title{font-size:0.72rem;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:10px;font-weight:600;}
 
-/* ===== RATES ===== */
+/* LEDGERS LIST */
+#ledgers-screen{display:none;}
+.ledgers-main{padding:16px 20px;max-width:900px;margin:0 auto;}
+.ledger-list-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;margin-bottom:12px;padding:16px 18px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:space-between;}
+.ledger-list-card:hover{border-color:var(--ledger);}
+.ledger-list-info h3{font-size:1rem;font-weight:700;margin-bottom:4px;}
+.ledger-list-info .parties{font-size:0.8rem;color:var(--muted);}
+.ledger-list-info .created{font-size:0.72rem;color:var(--muted);margin-top:3px;}
+.ledger-list-right{text-align:left;direction:ltr;}
+.ledger-list-currencies{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;margin-bottom:4px;}
+.cur-badge{font-size:0.68rem;padding:2px 6px;border-radius:4px;background:var(--ledger-dim);color:var(--ledger);}
+.btn-new-ledger{width:100%;padding:14px;border-radius:12px;border:2px dashed var(--border);background:transparent;color:var(--muted);font-family:'Tajawal',sans-serif;font-size:0.92rem;font-weight:600;cursor:pointer;margin-bottom:16px;}
+.btn-new-ledger:hover{border-color:var(--ledger);color:var(--ledger);}
+
+/* RATES */
 .rates-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:8px;margin-bottom:16px;}
 .rate-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;}
 .rate-card .currency-name{font-size:0.8rem;font-weight:700;margin-bottom:4px;}
@@ -77,21 +91,19 @@ body{background:var(--bg);color:var(--text);font-family:'Tajawal',sans-serif;min
 .rate-card input:focus{outline:none;border-color:var(--ayman);}
 .rate-card .equiv{font-size:0.67rem;color:var(--positive);margin-top:3px;direction:ltr;}
 
-/* ===== LEDGER ===== */
+/* LEDGER DETAIL */
+#ledger-screen{display:none;}
 .entry-form{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:16px;display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;}
 .form-group{display:flex;flex-direction:column;gap:4px;}
 .form-group label{font-size:0.7rem;color:var(--muted);font-weight:600;}
 .form-group select,.form-group input{background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:0.88rem;padding:7px 10px;}
 .form-group select:focus,.form-group input:focus{outline:none;border-color:var(--ayman);}
-.btn-add{padding:8px 18px;border-radius:8px;border:none;font-family:'Tajawal',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;background:var(--ayman);color:#fff;}
-.btn-add.purple{background:var(--debt);}
+.btn-add{padding:8px 18px;border-radius:8px;border:none;font-family:'Tajawal',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;background:var(--ledger);color:#fff;}
 
 .summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;}
 .sum-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;}
 .sum-label{font-size:0.7rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;}
 .sum-merchant{font-size:0.82rem;font-weight:700;margin-bottom:6px;}
-.sum-merchant.ayman{color:var(--ayman);}
-.sum-merchant.merci{color:var(--merci);}
 .sum-total{font-size:1.3rem;font-weight:800;direction:ltr;text-align:left;}
 .sum-total.pos{color:var(--positive);}
 .sum-total.neg{color:var(--negative);}
@@ -102,12 +114,8 @@ body{background:var(--bg);color:var(--text);font-family:'Tajawal',sans-serif;min
 
 .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
 .detail-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
-.detail-card-header{padding:10px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
-.detail-card-header.ayman{background:var(--ayman-dim);}
-.detail-card-header.merci{background:var(--merci-dim);}
-.dname{font-weight:800;font-size:0.95rem;}
-.dname.ayman{color:var(--ayman);}
-.dname.merci{color:var(--merci);}
+.detail-card-header{padding:10px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);background:var(--ledger-dim);}
+.dname{font-weight:800;font-size:0.95rem;color:var(--ledger);}
 .dtotal{margin-right:auto;font-size:0.8rem;color:var(--muted);direction:ltr;}
 .cur-row{display:flex;align-items:center;padding:9px 14px;border-bottom:1px solid #161820;gap:8px;}
 .cur-row:last-child{border-bottom:none;}
@@ -118,30 +126,25 @@ body{background:var(--bg);color:var(--text);font-family:'Tajawal',sans-serif;min
 .cur-empty{padding:16px;text-align:center;color:var(--muted);font-size:0.8rem;}
 
 .table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px;overflow-x:auto;}
-table{width:100%;border-collapse:collapse;min-width:600px;}
+table{width:100%;border-collapse:collapse;min-width:500px;}
 thead tr{background:#0d0f14;}
 th{padding:9px 11px;font-size:0.67rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);text-align:right;border-bottom:1px solid var(--border);white-space:nowrap;}
 td{padding:9px 11px;font-size:0.83rem;border-bottom:1px solid #161820;vertical-align:middle;}
 tr:last-child td{border-bottom:none;}
 tr:hover td{background:rgba(255,255,255,0.02);}
-.merchant-tag{display:inline-block;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:20px;}
-.tag-ayman{background:var(--ayman-dim);color:var(--ayman);}
-.tag-merci{background:var(--merci-dim);color:var(--merci);}
+.merchant-tag{display:inline-block;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:20px;background:var(--ledger-dim);color:var(--ledger);}
 .amount-cell{direction:ltr;text-align:left;font-weight:600;}
 .usd-cell{color:var(--muted);font-size:0.78rem;direction:ltr;text-align:left;}
 .btn-del{background:none;border:none;color:var(--muted);cursor:pointer;padding:3px 6px;border-radius:6px;}
 .btn-del:hover{color:var(--negative);background:rgba(239,68,68,0.1);}
-.btn-edit{background:none;border:none;color:var(--muted);cursor:pointer;padding:3px 6px;border-radius:6px;}
-.btn-edit:hover{color:var(--ayman);background:var(--ayman-dim);}
+.btn-edit-e{background:none;border:none;color:var(--muted);cursor:pointer;padding:3px 6px;border-radius:6px;}
+.btn-edit-e:hover{color:var(--ledger);background:var(--ledger-dim);}
 .empty-row td{text-align:center;color:var(--muted);padding:24px;}
 
-/* Carried */
 .carried-banner{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:10px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;}
 .cb-label{font-size:0.8rem;color:var(--merci);font-weight:600;}
 .cb-amount{font-size:1rem;font-weight:800;direction:ltr;}
-.cb-who{font-size:0.72rem;color:var(--muted);}
 
-/* Periods */
 .period-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:10px;}
 .period-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
 .period-title{font-size:0.88rem;font-weight:700;}
@@ -150,17 +153,14 @@ tr:hover td{background:rgba(255,255,255,0.02);}
 .period-item{background:var(--bg);border-radius:8px;padding:8px 10px;}
 .period-item-label{font-size:0.68rem;color:var(--muted);margin-bottom:3px;}
 .period-item-val{font-size:0.92rem;font-weight:800;direction:ltr;}
-.period-item-val.ayman{color:var(--ayman);}
-.period-item-val.merci{color:var(--merci);}
 
-/* ===== DEBT SYSTEM ===== */
+/* DEBT */
+#debt-screen{display:none;}
 .debt-main{padding:16px 20px;max-width:900px;margin:0 auto;}
-.btn-new-debtor{width:100%;padding:14px;border-radius:12px;border:2px dashed var(--border);background:transparent;color:var(--muted);font-family:'Tajawal',sans-serif;font-size:0.92rem;font-weight:600;cursor:pointer;margin-bottom:16px;transition:all 0.2s;}
+.btn-new-debtor{width:100%;padding:14px;border-radius:12px;border:2px dashed var(--border);background:transparent;color:var(--muted);font-family:'Tajawal',sans-serif;font-size:0.92rem;font-weight:600;cursor:pointer;margin-bottom:16px;}
 .btn-new-debtor:hover{border-color:var(--debt);color:var(--debt);}
-
 .debtor-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;margin-bottom:14px;overflow:hidden;}
-.debtor-header{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:background 0.15s;}
-.debtor-header:hover{background:rgba(255,255,255,0.02);}
+.debtor-header{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;}
 .debtor-info{display:flex;align-items:center;gap:12px;}
 .debtor-avatar{width:42px;height:42px;border-radius:50%;background:var(--debt-dim);border:2px solid var(--debt);display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:800;color:var(--debt);}
 .debtor-name{font-size:0.95rem;font-weight:700;}
@@ -170,46 +170,40 @@ tr:hover td{background:rgba(255,255,255,0.02);}
 .contact-snap{background:rgba(251,191,36,0.15);color:#fbbf24;}
 .debtor-totals{text-align:left;direction:ltr;}
 .debtor-total-sar{font-size:1rem;font-weight:800;color:var(--negative);}
-.debtor-total-usd{font-size:0.75rem;color:var(--muted);}
 .debtor-total-sar.paid{color:var(--positive);}
-
 .debtor-body{display:none;border-top:1px solid var(--border);}
 .debtor-body.open{display:block;}
 .debtor-body-inner{padding:14px 16px;}
-.debt-add-form{background:var(--bg);border-radius:10px;padding:12px;margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;}
-.debt-transactions{margin-bottom:12px;}
-.debt-tx{display:flex;align-items:center;padding:8px 10px;border-radius:8px;background:var(--bg);margin-bottom:6px;gap:10px;}
-.debt-tx:last-child{margin-bottom:0;}
+.debt-tx{display:flex;align-items:center;padding:8px 10px;border-radius:8px;background:var(--bg);margin-bottom:6px;gap:8px;flex-wrap:wrap;}
 .debt-tx-type{font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap;}
 .debt-tx-type.debt{background:rgba(239,68,68,0.15);color:var(--negative);}
 .debt-tx-type.payment{background:rgba(34,197,94,0.15);color:var(--positive);}
-.debt-tx-amount{font-size:0.88rem;font-weight:700;direction:ltr;flex:1;}
+.debt-tx-amount{font-size:0.88rem;font-weight:700;direction:ltr;}
 .debt-tx-sar{font-size:0.75rem;color:var(--muted);direction:ltr;}
-.debt-tx-note{font-size:0.75rem;color:var(--muted);flex:2;}
+.debt-tx-note{font-size:0.75rem;color:var(--muted);flex:1;}
 .debt-tx-date{font-size:0.72rem;color:var(--muted);white-space:nowrap;}
 .debt-summary-bar{background:var(--bg);border-radius:8px;padding:10px 12px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
 .dsb-item{text-align:center;}
 .dsb-label{font-size:0.67rem;color:var(--muted);margin-bottom:2px;}
-.dsb-val{font-size:0.95rem;font-weight:800;direction:ltr;}
+.dsb-val{font-size:0.92rem;font-weight:800;direction:ltr;}
 .debtor-actions{display:flex;gap:6px;margin-top:10px;}
 .btn-debtor-action{flex:1;padding:7px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Tajawal',sans-serif;font-size:0.8rem;cursor:pointer;}
 .btn-debtor-action:hover{border-color:var(--negative);color:var(--negative);}
-.btn-debtor-action.edit-btn:hover{border-color:var(--ayman);color:var(--ayman);}
-
+.btn-debtor-action.edit-btn:hover{border-color:var(--debt);color:var(--debt);}
 .total-debt-banner{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;text-align:center;}
 .tdb-item .tdb-label{font-size:0.7rem;color:var(--muted);margin-bottom:4px;}
 .tdb-item .tdb-val{font-size:1.2rem;font-weight:800;direction:ltr;}
 
-/* ===== MODAL ===== */
+/* MODAL */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:100;align-items:center;justify-content:center;padding:16px;}
 .modal-overlay.open{display:flex;}
-.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;width:100%;max-width:440px;direction:rtl;max-height:90vh;overflow-y:auto;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;width:100%;max-width:480px;direction:rtl;max-height:90vh;overflow-y:auto;}
 .modal h3{font-size:1rem;font-weight:700;margin-bottom:14px;}
 .modal .form-group{margin-bottom:12px;}
 .modal .form-group label{display:block;font-size:0.73rem;color:var(--muted);font-weight:600;margin-bottom:4px;}
 .modal .form-group input,.modal .form-group select{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:0.92rem;padding:8px 11px;}
 .modal-actions{display:flex;gap:8px;margin-top:14px;}
-.btn-save{flex:1;padding:10px;border-radius:8px;border:none;background:var(--ayman);color:#fff;font-family:'Tajawal',sans-serif;font-size:0.92rem;font-weight:700;cursor:pointer;}
+.btn-save{flex:1;padding:10px;border-radius:8px;border:none;background:var(--ledger);color:#fff;font-family:'Tajawal',sans-serif;font-size:0.92rem;font-weight:700;cursor:pointer;}
 .btn-save.green{background:var(--positive);}
 .btn-save.purple{background:var(--debt);}
 .btn-cancel{flex:1;padding:10px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Tajawal',sans-serif;font-size:0.92rem;cursor:pointer;}
@@ -223,21 +217,28 @@ tr:hover td{background:rgba(255,255,255,0.02);}
 .settle-btn.selected-yes{border-color:var(--positive);color:var(--positive);background:rgba(34,197,94,0.1);}
 .settle-btn.selected-no{border-color:var(--merci);color:var(--merci);background:rgba(245,158,11,0.1);}
 
+/* Currency checkboxes in new ledger modal */
+.cur-check-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
+.cur-check{border:1px solid var(--border);border-radius:8px;padding:8px 10px;cursor:pointer;text-align:center;font-size:0.82rem;font-weight:600;transition:all 0.15s;}
+.cur-check.selected{border-color:var(--ledger);background:var(--ledger-dim);color:var(--ledger);}
+.new-ledger-rates{margin-top:10px;}
+.new-ledger-rates .rate-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.new-ledger-rates .rate-row label{font-size:0.8rem;min-width:80px;color:var(--muted);}
+.new-ledger-rates .rate-row input{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:0.88rem;padding:6px 10px;direction:ltr;}
+
 @media print{
   body{background:#fff!important;color:#000!important;}
-  .header,.section-header,.rates-grid,.entry-form,.hbtns,.carried-banner,#home-screen,#debt-screen,.btn-back,.section-actions{display:none!important;}
+  .header,.section-header,.rates-grid,.entry-form,.hbtns,.carried-banner,#home-screen,#debt-screen,#ledgers-screen{display:none!important;}
   .sum-card,.detail-card{background:#fff!important;border:1px solid #ddd!important;}
-  .sum-total.pos{color:#16a34a!important;}
-  .sum-total.neg{color:#dc2626!important;}
 }
 @media(max-width:700px){
   .summary{grid-template-columns:1fr}
   .detail-grid{grid-template-columns:1fr}
-  .period-grid{grid-template-columns:1fr 1fr}
   .home-cards{grid-template-columns:1fr}
   .total-debt-banner{grid-template-columns:1fr}
-  .main,.debt-main{padding:10px}
+  .main,.debt-main,.ledgers-main{padding:10px}
   .debt-summary-bar{grid-template-columns:1fr 1fr}
+  .cur-check-grid{grid-template-columns:repeat(2,1fr)}
 }
 </style>
 </head>
@@ -246,18 +247,9 @@ tr:hover td{background:rgba(255,255,255,0.02);}
 <!-- LOGIN -->
 <div id="login-screen">
   <div class="login-box">
-    <div class="login-logo">
-      <h1>محا<span>سب</span></h1>
-      <p>نظام الجرد وسجل الديون</p>
-    </div>
-    <div class="login-field">
-      <label>الإيميل</label>
-      <input type="email" id="login-email" placeholder="example@mohaseb.com" autocomplete="email">
-    </div>
-    <div class="login-field">
-      <label>كلمة المرور</label>
-      <input type="password" id="login-pass" placeholder="••••••" autocomplete="current-password">
-    </div>
+    <div class="login-logo"><h1>محا<span>سب</span></h1><p>نظام الجرد وسجل الديون</p></div>
+    <div class="login-field"><label>الإيميل</label><input type="email" id="login-email" placeholder="example@mohaseb.com" autocomplete="email"></div>
+    <div class="login-field"><label>كلمة المرور</label><input type="password" id="login-pass" placeholder="••••••" autocomplete="current-password"></div>
     <button class="btn-login" onclick="doLogin()">دخول</button>
     <div class="login-error" id="login-error">بيانات الدخول غير صحيحة</div>
   </div>
@@ -265,46 +257,53 @@ tr:hover td{background:rgba(255,255,255,0.02);}
 
 <!-- APP -->
 <div id="app-screen">
-
-  <!-- Header -->
   <div class="header">
     <div class="header-left">
       <h1>محا<span>سب</span> <span class="sync-dot" id="sync-dot"></span></h1>
       <div class="welcome">مرحباً <strong id="user-display-name"></strong> 👋</div>
     </div>
     <div class="hbtns">
-      <button class="hbtn" onclick="showHome()" style="background:transparent;color:var(--muted);border-color:var(--border);">🏠 الرئيسية</button>
+      <button class="hbtn" onclick="showHome()" style="background:transparent;color:var(--muted);border-color:var(--border);">🏠</button>
       <button class="hbtn" onclick="doLogout()" style="background:transparent;color:var(--muted);border-color:var(--border);">خروج</button>
     </div>
   </div>
 
   <!-- HOME -->
   <div id="home-screen">
-    <div id="home-main" style="padding:30px 20px;max-width:700px;margin:0 auto;">
-      <div class="home-welcome">
-        <h2>أهلاً <span id="home-name"></span> 👋</h2>
-        <p>وش تبي تسوي اليوم؟</p>
-      </div>
+    <div style="padding:30px 20px;max-width:700px;margin:0 auto;">
+      <div class="home-welcome"><h2>أهلاً <span id="home-name"></span> 👋</h2><p>وش تبي تسوي اليوم؟</p></div>
       <div class="home-cards">
-        <div class="home-card" onclick="showDebt()">
+        <div class="home-card" onclick="showLedgers()">
+          <div class="card-icon">📦</div>
+          <h3>سجلات الجرد</h3>
+          <p>أنشئ وأدر سجلات جرد متعددة بأسماء وعملات مختلفة</p>
+        </div>
+        <div class="home-card debt-card" onclick="showDebt()">
           <div class="card-icon">💰</div>
           <h3>سجل الديون</h3>
-          <p>تتبع الديون والسدادات لكل شخص بأي عملة مع تحويل تلقائي للريال</p>
-        </div>
-        <div class="home-card" onclick="showLedger()">
-          <div class="card-icon">📦</div>
-          <h3>نظام الجرد</h3>
-          <p>جرد الحوالات بين أيمن وميرسي بعملات متعددة مع تتبع الفرق</p>
+          <p>تتبع الديون والسدادات لكل شخص بأي عملة مع تحويل للريال</p>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- LEDGER -->
-  <div id="ledger-screen">
+  <!-- LEDGERS LIST -->
+  <div id="ledgers-screen">
     <div class="section-header">
       <button class="btn-back" onclick="showHome()">→ رجوع</button>
-      <h2>📦 نظام الجرد</h2>
+      <h2>📦 سجلات الجرد</h2>
+    </div>
+    <div class="ledgers-main">
+      <button class="btn-new-ledger" onclick="openNewLedger()">+ إنشاء سجل جرد جديد</button>
+      <div id="ledgers-list"></div>
+    </div>
+  </div>
+
+  <!-- LEDGER DETAIL -->
+  <div id="ledger-screen">
+    <div class="section-header">
+      <button class="btn-back" onclick="showLedgers()">→ رجوع</button>
+      <h2 id="ledger-screen-title">📦 الجرد</h2>
       <div class="section-actions">
         <button class="hbtn" onclick="openClosePeriod()" style="background:rgba(34,197,94,0.15);color:var(--positive);border-color:var(--positive);">📦 إغلاق الفترة</button>
         <button class="hbtn" onclick="resetLedger()" style="background:rgba(239,68,68,0.15);color:var(--negative);border-color:var(--negative);">🗑️ تصفير</button>
@@ -312,38 +311,17 @@ tr:hover td{background:rgba(255,255,255,0.02);}
       </div>
     </div>
     <div class="main">
-      <!-- Carried -->
       <div class="carried-banner" id="carried-banner" style="display:none;">
-        <div>
-          <div class="cb-label">💰 رصيد مُرحَّل من الفترة السابقة</div>
-          <div class="cb-who" id="carried-who"></div>
-        </div>
+        <div><div class="cb-label">💰 رصيد مُرحَّل</div><div style="font-size:0.72rem;color:var(--muted);" id="carried-who"></div></div>
         <div class="cb-amount" id="carried-amount"></div>
       </div>
 
-      <!-- Rates -->
       <div class="section-title">أسعار الصرف (كم وحدة = 1 دولار)</div>
-      <div class="rates-grid">
-        <div class="rate-card"><div class="currency-name">🇸🇦 ريال SAR</div><label>1 USD =</label><input type="number" id="l-rate-SAR" value="3.86" step="0.001" oninput="updateLedgerEquiv('SAR')"><div class="equiv" id="l-equiv-SAR">1 ريال = $0.259</div></div>
-        <div class="rate-card"><div class="currency-name">🇶🇦 ريال QAR</div><label>1 USD =</label><input type="number" id="l-rate-QAR" value="3.76" step="0.001" oninput="updateLedgerEquiv('QAR')"><div class="equiv" id="l-equiv-QAR">1 ريال = $0.266</div></div>
-        <div class="rate-card"><div class="currency-name">🇴🇲 ريال OMR</div><label>1 USD =</label><input type="number" id="l-rate-OMR" value="0.397" step="0.0001" oninput="updateLedgerEquiv('OMR')"><div class="equiv" id="l-equiv-OMR">1 ريال = $2.519</div></div>
-        <div class="rate-card"><div class="currency-name">🇰🇼 دينار KWD</div><label>1 USD =</label><input type="number" id="l-rate-KWD" value="0.313" step="0.0001" oninput="updateLedgerEquiv('KWD')"><div class="equiv" id="l-equiv-KWD">1 دينار = $3.195</div></div>
-        <div class="rate-card"><div class="currency-name">🇦🇪 درهم AED</div><label>1 USD =</label><input type="number" id="l-rate-AED" value="3.72" step="0.001" oninput="updateLedgerEquiv('AED')"><div class="equiv" id="l-equiv-AED">1 درهم = $0.269</div></div>
-        <div class="rate-card"><div class="currency-name">💵 USDT</div><label>1 USD =</label><input type="number" id="l-rate-USDT" value="1" step="0.01" oninput="updateLedgerEquiv('USDT')"><div class="equiv" id="l-equiv-USDT">1 USDT = $1.000</div></div>
-      </div>
+      <div class="rates-grid" id="ledger-rates-grid"></div>
 
-      <!-- Entry Form -->
       <div class="entry-form">
-        <div class="form-group"><label>التاجر</label>
-          <select id="f-merchant"><option value="أيمن">أيمن</option><option value="ميرسي">ميرسي</option></select>
-        </div>
-        <div class="form-group"><label>العملة</label>
-          <select id="f-currency">
-            <option value="SAR">🇸🇦 SAR</option><option value="QAR">🇶🇦 QAR</option>
-            <option value="OMR">🇴🇲 OMR</option><option value="KWD">🇰🇼 KWD</option>
-            <option value="AED">🇦🇪 AED</option><option value="USDT">💵 USDT</option>
-          </select>
-        </div>
+        <div class="form-group"><label>الطرف</label><select id="f-merchant"></select></div>
+        <div class="form-group"><label>العملة</label><select id="f-currency"></select></div>
         <div class="form-group">
           <label>المبلغ <span id="calc-preview" style="color:var(--positive);font-weight:700;font-size:0.75rem;"></span></label>
           <input type="text" id="f-amount" placeholder="100+500" style="width:160px;" oninput="previewCalc()" onkeydown="if(event.key==='Enter')addLedgerEntry()">
@@ -354,27 +332,23 @@ tr:hover td{background:rgba(255,255,255,0.02);}
         <button class="btn-add" onclick="addLedgerEntry()">+ إضافة</button>
       </div>
 
-      <!-- Summary -->
       <div class="summary">
-        <div class="sum-card"><div class="sum-label">إجمالي</div><div class="sum-merchant ayman">أيمن</div><div class="sum-total neutral" id="total-ayman">$0.00</div><div class="breakdown" id="breakdown-ayman"></div></div>
-        <div class="sum-card"><div class="sum-label">إجمالي</div><div class="sum-merchant merci">ميرسي</div><div class="sum-total neutral" id="total-merci">$0.00</div><div class="breakdown" id="breakdown-merci"></div></div>
+        <div class="sum-card"><div class="sum-label">إجمالي</div><div class="sum-merchant" id="sum-party1-label" style="color:var(--ledger);">—</div><div class="sum-total neutral" id="total-party1">$0.00</div><div class="breakdown" id="breakdown-party1"></div></div>
+        <div class="sum-card"><div class="sum-label">إجمالي</div><div class="sum-merchant" id="sum-party2-label" style="color:var(--merci);">—</div><div class="sum-total neutral" id="total-party2">$0.00</div><div class="breakdown" id="breakdown-party2"></div></div>
         <div class="sum-card" style="text-align:center;"><div class="sum-label">صافي الفرق</div><div class="sum-total neutral" id="diff-amount">$0.00</div><div class="diff-note" id="diff-note" style="color:var(--muted);">—</div></div>
       </div>
 
-      <!-- Detail -->
       <div class="section-title">تفصيل العملات</div>
       <div class="detail-grid">
-        <div class="detail-card"><div class="detail-card-header ayman"><span class="dname ayman">أيمن</span><span class="dtotal" id="detail-total-ayman">$0.00</span></div><div id="detail-ayman"><div class="cur-empty">لا توجد بيانات</div></div></div>
-        <div class="detail-card"><div class="detail-card-header merci"><span class="dname merci">ميرسي</span><span class="dtotal" id="detail-total-merci">$0.00</span></div><div id="detail-merci"><div class="cur-empty">لا توجد بيانات</div></div></div>
+        <div class="detail-card"><div class="detail-card-header"><span class="dname" id="detail-party1-name">—</span><span class="dtotal" id="detail-total-party1">$0.00</span></div><div id="detail-party1"><div class="cur-empty">لا توجد بيانات</div></div></div>
+        <div class="detail-card"><div class="detail-card-header"><span class="dname" id="detail-party2-name">—</span><span class="dtotal" id="detail-total-party2">$0.00</span></div><div id="detail-party2"><div class="cur-empty">لا توجد بيانات</div></div></div>
       </div>
 
-      <!-- Table -->
       <div class="table-wrap">
-        <table><thead><tr><th>#</th><th>التاجر</th><th>العملة</th><th>المبلغ</th><th>بالدولار</th><th>التاريخ</th><th>ملاحظة</th><th>بواسطة</th><th></th></tr></thead>
-        <tbody id="entries-body"><tr class="empty-row"><td colspan="9">لا توجد إدخالات بعد</td></tr></tbody></table>
+        <table><thead><tr><th>#</th><th>الطرف</th><th>العملة</th><th>المبلغ</th><th>بالدولار</th><th>التاريخ</th><th>ملاحظة</th><th></th></tr></thead>
+        <tbody id="entries-body"><tr class="empty-row"><td colspan="8">لا توجد إدخالات بعد</td></tr></tbody></table>
       </div>
 
-      <!-- Periods -->
       <div id="periods-section" style="display:none;">
         <div class="section-title">📦 سجل الفترات المغلقة</div>
         <div id="periods-list"></div>
@@ -392,7 +366,6 @@ tr:hover td{background:rgba(255,255,255,0.02);}
       </div>
     </div>
     <div class="debt-main">
-      <!-- hidden rate inputs -->
       <div style="display:none;">
         <input type="number" id="d-rate-USD" value="3.84">
         <input type="number" id="d-rate-QAR" value="1.021">
@@ -400,54 +373,84 @@ tr:hover td{background:rgba(255,255,255,0.02);}
         <input type="number" id="d-rate-KWD" value="12.27">
         <input type="number" id="d-rate-AED" value="1.032">
       </div>
-
-      <!-- أسعار الصرف قابلة للطي -->
       <div style="margin-bottom:14px;">
         <button onclick="toggleDebtRates()" id="rates-toggle-btn" class="hbtn" style="background:transparent;color:var(--muted);border-color:var(--border);width:100%;text-align:right;padding:8px 12px;">⚙️ أسعار الصرف (مقابل الريال السعودي) ▼</button>
         <div id="debt-rates-panel" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px;margin-top:6px;">
           <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;">
-            <div class="rate-card"><div class="currency-name">💵 USD</div><label>1 USD =</label><input type="number" id="d-rate-USD" value="3.84" step="0.001" oninput="renderDebtors()"></div>
-            <div class="rate-card"><div class="currency-name">🇦🇪 AED</div><label>1 AED =</label><input type="number" id="d-rate-AED" value="1.032" step="0.001" oninput="renderDebtors()"></div>
-            <div class="rate-card"><div class="currency-name">🇶🇦 QAR</div><label>1 QAR =</label><input type="number" id="d-rate-QAR" value="1.021" step="0.001" oninput="renderDebtors()"></div>
-            <div class="rate-card"><div class="currency-name">🇰🇼 KWD</div><label>1 KWD =</label><input type="number" id="d-rate-KWD" value="12.27" step="0.001" oninput="renderDebtors()"></div>
-            <div class="rate-card"><div class="currency-name">🇴🇲 OMR</div><label>1 OMR =</label><input type="number" id="d-rate-OMR" value="9.67" step="0.001" oninput="renderDebtors()"></div>
+            <div class="rate-card"><div class="currency-name">💵 USD</div><label>1 USD =</label><input type="number" id="d-rate-USD2" value="3.84" step="0.001" oninput="document.getElementById('d-rate-USD').value=this.value;renderDebtors()"></div>
+            <div class="rate-card"><div class="currency-name">🇦🇪 AED</div><label>1 AED =</label><input type="number" id="d-rate-AED2" value="1.032" step="0.001" oninput="document.getElementById('d-rate-AED').value=this.value;renderDebtors()"></div>
+            <div class="rate-card"><div class="currency-name">🇶🇦 QAR</div><label>1 QAR =</label><input type="number" id="d-rate-QAR2" value="1.021" step="0.001" oninput="document.getElementById('d-rate-QAR').value=this.value;renderDebtors()"></div>
+            <div class="rate-card"><div class="currency-name">🇰🇼 KWD</div><label>1 KWD =</label><input type="number" id="d-rate-KWD2" value="12.27" step="0.001" oninput="document.getElementById('d-rate-KWD').value=this.value;renderDebtors()"></div>
+            <div class="rate-card"><div class="currency-name">🇴🇲 OMR</div><label>1 OMR =</label><input type="number" id="d-rate-OMR2" value="9.67" step="0.001" oninput="document.getElementById('d-rate-OMR').value=this.value;renderDebtors()"></div>
           </div>
         </div>
       </div>
-      <!-- إجمالي الديون -->
-      <div class="total-debt-banner" id="total-debt-banner">
+      <div class="total-debt-banner">
         <div class="tdb-item"><div class="tdb-label">إجمالي الديون</div><div class="tdb-val" id="tdb-total" style="color:var(--negative);">0 ريال</div></div>
         <div class="tdb-item"><div class="tdb-label">بالدولار</div><div class="tdb-val" id="tdb-usd" style="color:var(--negative);">$0.00</div></div>
         <div class="tdb-item"><div class="tdb-label">عدد المدينين</div><div class="tdb-val" id="tdb-count" style="color:var(--text);">0</div></div>
       </div>
-
-      <!-- ترتيب -->
       <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
         <span style="font-size:0.75rem;color:var(--muted);font-weight:600;align-self:center;">ترتيب:</span>
-        <button onclick="setSortDebt('name')" id="sort-name" class="hbtn" style="background:var(--ayman-dim);color:var(--ayman);border-color:var(--ayman);">الاسم أ-ي</button>
+        <button onclick="setSortDebt('name')" id="sort-name" class="hbtn" style="background:var(--debt-dim);color:var(--debt);border-color:var(--debt);">الاسم أ-ي</button>
         <button onclick="setSortDebt('amount')" id="sort-amount" class="hbtn" style="background:transparent;color:var(--muted);border-color:var(--border);">الأعلى مبلغاً</button>
         <button onclick="setSortDebt('date')" id="sort-date" class="hbtn" style="background:transparent;color:var(--muted);border-color:var(--border);">آخر تعديل</button>
       </div>
-
       <div id="debtors-list"></div>
     </div>
   </div>
+</div>
 
+<!-- Modal: إنشاء جرد جديد -->
+<div class="modal-overlay" id="new-ledger-modal">
+  <div class="modal">
+    <h3>📦 إنشاء سجل جرد جديد</h3>
+    <div class="form-group"><label>اسم السجل</label><input type="text" id="nl-name" placeholder="مثال: حوالات الخليج"></div>
+    <div class="form-group"><label>الطرف الأول</label><input type="text" id="nl-party1" placeholder="مثال: أيمن"></div>
+    <div class="form-group"><label>الطرف الثاني</label><input type="text" id="nl-party2" placeholder="مثال: ميرسي"></div>
+    <div class="form-group">
+      <label>اختر العملات</label>
+      <div class="cur-check-grid">
+        <div class="cur-check selected" data-cur="SAR" onclick="toggleCur(this)">🇸🇦 SAR</div>
+        <div class="cur-check selected" data-cur="QAR" onclick="toggleCur(this)">🇶🇦 QAR</div>
+        <div class="cur-check selected" data-cur="AED" onclick="toggleCur(this)">🇦🇪 AED</div>
+        <div class="cur-check selected" data-cur="KWD" onclick="toggleCur(this)">🇰🇼 KWD</div>
+        <div class="cur-check selected" data-cur="OMR" onclick="toggleCur(this)">🇴🇲 OMR</div>
+        <div class="cur-check selected" data-cur="USDT" onclick="toggleCur(this)">💵 USDT</div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>أسعار الصرف (كم وحدة = 1 دولار)</label>
+      <div class="new-ledger-rates" id="nl-rates">
+        <div class="rate-row"><label>🇸🇦 SAR</label><input type="number" id="nlr-SAR" value="3.86" step="0.001"></div>
+        <div class="rate-row"><label>🇶🇦 QAR</label><input type="number" id="nlr-QAR" value="3.76" step="0.001"></div>
+        <div class="rate-row"><label>🇦🇪 AED</label><input type="number" id="nlr-AED" value="3.72" step="0.001"></div>
+        <div class="rate-row"><label>🇰🇼 KWD</label><input type="number" id="nlr-KWD" value="0.313" step="0.0001"></div>
+        <div class="rate-row"><label>🇴🇲 OMR</label><input type="number" id="nlr-OMR" value="0.397" step="0.0001"></div>
+        <div class="rate-row"><label>💵 USDT</label><input type="number" id="nlr-USDT" value="1" step="0.01"></div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-save" onclick="saveNewLedger()">✅ إنشاء</button>
+      <button class="btn-cancel" onclick="closeModal('new-ledger-modal')">إلغاء</button>
+    </div>
+  </div>
 </div>
 
 <!-- Modal: تعديل حوالة -->
 <div class="modal-overlay" id="edit-modal">
   <div class="modal">
     <h3>✏️ تعديل الحوالة</h3>
-    <div class="form-group"><label>التاجر</label><select id="e-merchant"><option value="أيمن">أيمن</option><option value="ميرسي">ميرسي</option></select></div>
-    <div class="form-group"><label>العملة</label>
-      <select id="e-currency"><option value="SAR">🇸🇦 SAR</option><option value="QAR">🇶🇦 QAR</option><option value="OMR">🇴🇲 OMR</option><option value="KWD">🇰🇼 KWD</option><option value="AED">🇦🇪 AED</option><option value="USDT">💵 USDT</option></select>
-    </div>
+    <div class="form-group"><label>الطرف</label><select id="e-merchant"></select></div>
+    <div class="form-group"><label>العملة</label><select id="e-currency"></select></div>
     <div class="form-group"><label>المبلغ</label><input type="text" id="e-amount"></div>
     <div class="form-group"><label>سعر خاص</label><input type="text" id="e-rate" placeholder="افتراضي"></div>
     <div class="form-group"><label>التاريخ</label><input type="date" id="e-date"></div>
     <div class="form-group"><label>ملاحظة</label><input type="text" id="e-note"></div>
-    <div class="modal-actions"><button class="btn-save" onclick="saveLedgerEdit()">💾 حفظ</button><button class="btn-cancel" onclick="closeModal('edit-modal')">إلغاء</button></div>
+    <div class="modal-actions">
+      <button class="btn-save" onclick="saveLedgerEdit()">💾 حفظ</button>
+      <button class="btn-cancel" onclick="closeModal('edit-modal')">إلغاء</button>
+    </div>
   </div>
 </div>
 
@@ -462,7 +465,10 @@ tr:hover td{background:rgba(255,255,255,0.02);}
       <button class="settle-btn" id="settle-no" onclick="setSettle(false)">↩️ لا — رحّل الرصيد</button>
     </div>
     <div class="form-group"><label>اسم الفترة</label><input type="text" id="period-name" placeholder="مثال: أسبوع 1 مارس"></div>
-    <div class="modal-actions"><button class="btn-save green" onclick="confirmClosePeriod()">إغلاق وتصفير</button><button class="btn-cancel" onclick="closeModal('close-period-modal')">إلغاء</button></div>
+    <div class="modal-actions">
+      <button class="btn-save green" onclick="confirmClosePeriod()">إغلاق وتصفير</button>
+      <button class="btn-cancel" onclick="closeModal('close-period-modal')">إلغاء</button>
+    </div>
   </div>
 </div>
 
@@ -471,7 +477,7 @@ tr:hover td{background:rgba(255,255,255,0.02);}
   <div class="modal">
     <h3>➕ إضافة مدين</h3>
     <div class="form-group"><label>الاسم</label><input type="text" id="nd-name" placeholder="اسم الشخص"></div>
-    <div class="form-group"><label>واتساب (اختياري)</label><input type="text" id="nd-wa" placeholder="+966xxxxxxxxx" direction="ltr"></div>
+    <div class="form-group"><label>واتساب (اختياري)</label><input type="text" id="nd-wa" placeholder="+966xxxxxxxxx"></div>
     <div class="form-group"><label>سناب (اختياري)</label><input type="text" id="nd-snap" placeholder="@username"></div>
     <div class="modal-actions"><button class="btn-save purple" onclick="saveNewDebtor()">إضافة</button><button class="btn-cancel" onclick="closeModal('new-debtor-modal')">إلغاء</button></div>
   </div>
@@ -488,74 +494,74 @@ tr:hover td{background:rgba(255,255,255,0.02);}
   </div>
 </div>
 
-<!-- Modal: إضافة معاملة للمدين -->
+<!-- Modal: إضافة معاملة -->
 <div class="modal-overlay" id="add-tx-modal">
   <div class="modal">
     <h3 id="add-tx-title">إضافة معاملة</h3>
-    <div class="form-group"><label>النوع</label>
-      <select id="tx-type"><option value="debt">دين 🔴</option><option value="payment">سداد 🟢</option></select>
-    </div>
+    <div class="form-group"><label>النوع</label><select id="tx-type"><option value="debt">دين 🔴</option><option value="payment">سداد 🟢</option></select></div>
     <div class="form-group"><label>العملة</label>
-      <select id="tx-currency"><option value="SAR">🇸🇦 ريال SAR</option><option value="USD">💵 دولار USD</option><option value="QAR">🇶🇦 ريال QAR</option><option value="OMR">🇴🇲 ريال OMR</option><option value="KWD">🇰🇼 دينار KWD</option><option value="AED">🇦🇪 درهم AED</option></select>
+      <select id="tx-currency">
+        <option value="SAR">🇸🇦 SAR</option><option value="USD">💵 USD</option>
+        <option value="QAR">🇶🇦 QAR</option><option value="OMR">🇴🇲 OMR</option>
+        <option value="KWD">🇰🇼 KWD</option><option value="AED">🇦🇪 AED</option>
+      </select>
     </div>
-    <div class="form-group"><label>المبلغ</label><input type="text" id="tx-amount" placeholder="مثال: 100+500"></div>
+    <div class="form-group"><label>المبلغ</label><input type="text" id="tx-amount" placeholder="100+500"></div>
     <div class="form-group"><label>التاريخ</label><input type="date" id="tx-date"></div>
-    <div class="form-group"><label>ملاحظة / سبب</label><input type="text" id="tx-note" placeholder="سبب الدين أو السداد..."></div>
+    <div class="form-group"><label>ملاحظة / سبب</label><input type="text" id="tx-note"></div>
     <div class="modal-actions"><button class="btn-save purple" onclick="saveDebtTx()">إضافة</button><button class="btn-cancel" onclick="closeModal('add-tx-modal')">إلغاء</button></div>
   </div>
 </div>
 
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <script>
-// ===== Config =====
-const firebaseConfig = {
-  apiKey: "AIzaSyBP-iUnDaN_Ve-DRWLh2fCRdAutt7dPRRE",
-  authDomain: "mohaseb-merci-aymen.firebaseapp.com",
-  projectId: "mohaseb-merci-aymen",
-  storageBucket: "mohaseb-merci-aymen.firebasestorage.app",
-  messagingSenderId: "854745332941",
-  appId: "1:854745332941:web:006b85104727039e5afd84"
+const firebaseConfig={
+  apiKey:"AIzaSyBP-iUnDaN_Ve-DRWLh2fCRdAutt7dPRRE",
+  authDomain:"mohaseb-merci-aymen.firebaseapp.com",
+  projectId:"mohaseb-merci-aymen",
+  storageBucket:"mohaseb-merci-aymen.firebasestorage.app",
+  messagingSenderId:"854745332941",
+  appId:"1:854745332941:web:006b85104727039e5afd84"
 };
 firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
+const auth=firebase.auth();
+const db=firebase.firestore();
 
-const userNames = {'xbrbr@mohaseb.com':'ميرسي'};
+const userNames={'xbrbr@mohaseb.com':'ميرسي'};
+const allCurrencies=['SAR','QAR','AED','KWD','OMR','USDT'];
+const flags={SAR:'🇸🇦',QAR:'🇶🇦',OMR:'🇴🇲',KWD:'🇰🇼',AED:'🇦🇪',USDT:'💵',USD:'💵'};
+const unitNames={SAR:'ريال',QAR:'ريال',OMR:'ريال',KWD:'دينار',AED:'درهم',USDT:'USDT'};
+const defaultRates={SAR:3.86,QAR:3.76,AED:3.72,KWD:0.313,OMR:0.397,USDT:1};
 
-// ===== State =====
-let currentUser = null;
-let ledgerEntries = [], ledgerPeriods = [], carriedBalance = null;
-let debtors = [];
-let editingLedgerId = null, settleChoice = null;
-let editingDebtorId = null, addTxDebtorId = null;
-let unsubs = [];
+let currentUser=null,currentLedgerId=null,currentLedger=null;
+let ledgersList=[],ledgerEntries=[],ledgerPeriods=[],carriedBalance=null;
+let debtors=[];
+let editingLedgerId=null,settleChoice=null,editingDebtorId=null,addTxDebtorId=null;
+let debtSortBy='name';
+let unsubs=[],ledgerUnsubs=[];
 
-const lCurrencies = ['SAR','QAR','OMR','KWD','AED','USDT'];
-const flags = {SAR:'🇸🇦',QAR:'🇶🇦',OMR:'🇴🇲',KWD:'🇰🇼',AED:'🇦🇪',USDT:'💵',USD:'💵'};
-const unitNames = {SAR:'ريال',QAR:'ريال',OMR:'ريال',KWD:'دينار',AED:'درهم',USDT:'USDT'};
-
-// ===== Auth =====
-auth.onAuthStateChanged(user => {
+// ===== AUTH =====
+auth.onAuthStateChanged(user=>{
   if(user){
-    currentUser = user;
-    const name = userNames[user.email] || user.email.split('@')[0];
-    document.getElementById('user-display-name').textContent = name;
-    document.getElementById('home-name').textContent = name;
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('app-screen').style.display = 'block';
-    document.getElementById('f-date').valueAsDate = new Date();
-    document.getElementById('tx-date').valueAsDate = new Date();
+    currentUser=user;
+    const name=userNames[user.email]||user.email.split('@')[0];
+    document.getElementById('user-display-name').textContent=name;
+    document.getElementById('home-name').textContent=name;
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app-screen').style.display='block';
+    document.getElementById('f-date').valueAsDate=new Date();
+    document.getElementById('tx-date').valueAsDate=new Date();
     showHome();
     startListening();
   } else {
-    currentUser = null;
-    document.getElementById('login-screen').style.display = 'flex';
-    document.getElementById('app-screen').style.display = 'none';
-    unsubs.forEach(u=>u());
+    currentUser=null;
+    document.getElementById('login-screen').style.display='flex';
+    document.getElementById('app-screen').style.display='none';
+    unsubs.forEach(u=>u()); unsubs=[];
+    ledgerUnsubs.forEach(u=>u()); ledgerUnsubs=[];
   }
 });
 
@@ -564,91 +570,105 @@ async function doLogin(){
   const pass=document.getElementById('login-pass').value;
   const err=document.getElementById('login-error');
   err.style.display='none';
-  try{ await auth.signInWithEmailAndPassword(email,pass); }
-  catch(e){ err.style.display='block'; }
+  try{await auth.signInWithEmailAndPassword(email,pass);}
+  catch(e){err.style.display='block';}
 }
 document.getElementById('login-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
-function doLogout(){ if(confirm('تسجيل الخروج؟')) auth.signOut(); }
+function doLogout(){if(confirm('تسجيل الخروج؟'))auth.signOut();}
 
-// ===== Navigation =====
+// ===== NAVIGATION =====
 function showHome(){
   document.getElementById('home-screen').style.display='block';
+  document.getElementById('ledgers-screen').style.display='none';
   document.getElementById('ledger-screen').style.display='none';
   document.getElementById('debt-screen').style.display='none';
 }
-function showLedger(){
+function showLedgers(){
   document.getElementById('home-screen').style.display='none';
+  document.getElementById('ledgers-screen').style.display='block';
+  document.getElementById('ledger-screen').style.display='none';
+  document.getElementById('debt-screen').style.display='none';
+}
+function showLedger(id){
+  currentLedgerId=id;
+  currentLedger=ledgersList.find(l=>l.id===id);
+  if(!currentLedger) return;
+  document.getElementById('home-screen').style.display='none';
+  document.getElementById('ledgers-screen').style.display='none';
   document.getElementById('ledger-screen').style.display='block';
   document.getElementById('debt-screen').style.display='none';
+  setupLedgerUI();
+  startLedgerListening();
 }
 function showDebt(){
   document.getElementById('home-screen').style.display='none';
+  document.getElementById('ledgers-screen').style.display='none';
   document.getElementById('ledger-screen').style.display='none';
   document.getElementById('debt-screen').style.display='block';
 }
 
-// ===== Firestore =====
-function userRef(){ return db.collection('users').doc(currentUser.uid); }
+// ===== FIRESTORE =====
+function userRef(){return db.collection('users').doc(currentUser.uid);}
+function ledgerRef(){return userRef().collection('ledgers').doc(currentLedgerId);}
 
 function startListening(){
   setSyncing(true);
-  // Ledger
-  unsubs.push(userRef().collection('entries').orderBy('createdAt','asc').onSnapshot(snap=>{
-    ledgerEntries=snap.docs.map(d=>({id:d.id,...d.data()}));
-    renderLedger(); setSyncing(false);
+  // Ledgers list
+  unsubs.push(userRef().collection('ledgers').orderBy('createdAt','asc').onSnapshot(snap=>{
+    ledgersList=snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderLedgersList();
+    setSyncing(false);
   }));
-  unsubs.push(userRef().collection('periods').orderBy('closedAt','desc').onSnapshot(snap=>{
-    ledgerPeriods=snap.docs.map(d=>({id:d.id,...d.data()}));
-    renderPeriods();
-  }));
-  userRef().collection('settings').doc('carried').onSnapshot(doc=>{
-    carriedBalance=doc.exists?doc.data():null;
-    renderCarried(); renderLedger();
-  });
-  // Debtors - real-time with subcollection
+  // Debtors
   unsubs.push(userRef().collection('debtors').orderBy('createdAt','asc').onSnapshot(snap=>{
-    const debtorDocs = snap.docs.map(d=>({id:d.id,...d.data(),transactions:[]}));
-    let loaded = 0;
-    if(debtorDocs.length === 0){ debtors=[]; renderDebtors(); return; }
-    debtorDocs.forEach((d,i)=>{
+    const docs=snap.docs.map(d=>({id:d.id,...d.data(),transactions:[]}));
+    if(!docs.length){debtors=[];renderDebtors();return;}
+    docs.forEach((d,i)=>{
       userRef().collection('debtors').doc(d.id).collection('transactions')
         .orderBy('createdAt','asc').onSnapshot(txSnap=>{
-          debtorDocs[i].transactions = txSnap.docs.map(t=>({id:t.id,...t.data()}));
-          loaded++;
-          if(loaded >= debtorDocs.length){ debtors=[...debtorDocs]; renderDebtors(); }
+          docs[i].transactions=txSnap.docs.map(t=>({id:t.id,...t.data()}));
+          debtors=[...docs];renderDebtors();
         });
     });
   }));
 }
 
-function setSyncing(v){
-  document.getElementById('sync-dot').className='sync-dot'+(v?' syncing':'');
+function startLedgerListening(){
+  ledgerUnsubs.forEach(u=>u()); ledgerUnsubs=[];
+  setSyncing(true);
+  ledgerUnsubs.push(ledgerRef().collection('entries').orderBy('createdAt','asc').onSnapshot(snap=>{
+    ledgerEntries=snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderLedger();setSyncing(false);
+  }));
+  ledgerUnsubs.push(ledgerRef().collection('periods').orderBy('closedAt','desc').onSnapshot(snap=>{
+    ledgerPeriods=snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderPeriods();
+  }));
+  ledgerRef().collection('settings').doc('carried').onSnapshot(doc=>{
+    carriedBalance=doc.exists?doc.data():null;
+    renderCarried();renderLedger();
+  });
 }
 
-// ===== Helpers =====
-function getLedgerRate(cur){ return parseFloat(document.getElementById('l-rate-'+cur).value)||1; }
-function toUSD(amount,cur,customRate){ return amount/((customRate&&customRate>0)?customRate:getLedgerRate(cur)); }
+function setSyncing(v){document.getElementById('sync-dot').className='sync-dot'+(v?' syncing':'');}
+
+// ===== HELPERS =====
+function getLedgerRate(cur){
+  if(!currentLedger) return 1;
+  return currentLedger.rates?.[cur]||defaultRates[cur]||1;
+}
+function toUSD(amount,cur,customRate){return amount/((customRate&&customRate>0)?customRate:getLedgerRate(cur));}
 function toSAR(amount,cur){
   if(cur==='SAR') return amount;
-  const rate=parseFloat(document.getElementById('d-rate-'+cur)?.value)||1;
-  return amount*rate;
+  return amount*(parseFloat(document.getElementById('d-rate-'+cur)?.value)||1);
 }
-function fmt(n){ return n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
-function fmtSAR(n){ return n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+' ريال'; }
-function fmt4(n){ return n.toLocaleString('en-US',{minimumFractionDigits:3,maximumFractionDigits:4}); }
-
-function updateLedgerEquiv(cur){
-  const rate=getLedgerRate(cur);
-  document.getElementById('l-equiv-'+cur).textContent='1 '+unitNames[cur]+' = $'+fmt4(rate>0?1/rate:0);
-  renderLedger();
-}
-
+function fmt(n){return n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmt4(n){return n.toLocaleString('en-US',{minimumFractionDigits:3,maximumFractionDigits:4});}
 function parseAmount(str){
   const clean=String(str).replace(/\s/g,'').replace(/،/g,'.').replace(/,/g,'.');
   if(!/^[\d.+\-*/()]+$/.test(clean)) return NaN;
   try{return Function('"use strict"; return ('+clean+')')();}catch{return NaN;}
 }
-
 function previewCalc(){
   const val=document.getElementById('f-amount').value;
   const cur=document.getElementById('f-currency').value;
@@ -660,6 +680,105 @@ function previewCalc(){
     if(!isNaN(r)&&r>0) p.textContent='= '+r.toLocaleString('en-US',{maximumFractionDigits:2})+' ≈ $'+fmt(r/rate);
     else p.textContent=val.match(/[+\-*/]/)?'✗':'';
   } else p.textContent='';
+}
+
+// ===== LEDGERS LIST =====
+function renderLedgersList(){
+  const list=document.getElementById('ledgers-list');
+  if(!ledgersList.length){
+    list.innerHTML='<div style="text-align:center;color:var(--muted);padding:40px;font-size:0.9rem;">لا توجد سجلات — اضغط "+" لإنشاء سجل جديد</div>';
+    return;
+  }
+  list.innerHTML=ledgersList.map(l=>{
+    const curs=(l.currencies||[]).map(c=>`<span class="cur-badge">${flags[c]||''} ${c}</span>`).join('');
+    const date=l.createdAt?.toDate?.()?.toLocaleDateString('ar-SA')||'';
+    return `<div class="ledger-list-card" onclick="showLedger('${l.id}')">
+      <div class="ledger-list-info">
+        <h3>${l.name}</h3>
+        <div class="parties">⚖️ ${l.party1} vs ${l.party2}</div>
+        <div class="created">📅 ${date}</div>
+      </div>
+      <div class="ledger-list-right">
+        <div class="ledger-list-currencies">${curs}</div>
+        <div style="font-size:0.72rem;color:var(--muted);text-align:left;direction:ltr;margin-top:4px;">← فتح</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===== NEW LEDGER =====
+function toggleCur(el){el.classList.toggle('selected');}
+
+function openNewLedger(){
+  document.getElementById('nl-name').value='';
+  document.getElementById('nl-party1').value='';
+  document.getElementById('nl-party2').value='';
+  document.querySelectorAll('.cur-check').forEach(el=>el.classList.add('selected'));
+  document.getElementById('new-ledger-modal').classList.add('open');
+}
+
+async function saveNewLedger(){
+  const name=document.getElementById('nl-name').value.trim();
+  const party1=document.getElementById('nl-party1').value.trim();
+  const party2=document.getElementById('nl-party2').value.trim();
+  if(!name||!party1||!party2){alert('أدخل اسم السجل والطرفين');return;}
+  const currencies=[...document.querySelectorAll('.cur-check.selected')].map(el=>el.dataset.cur);
+  if(!currencies.length){alert('اختر عملة واحدة على الأقل');return;}
+  const rates={};
+  currencies.forEach(c=>{
+    rates[c]=parseFloat(document.getElementById('nlr-'+c)?.value)||defaultRates[c]||1;
+  });
+  await userRef().collection('ledgers').add({
+    name,party1,party2,currencies,rates,
+    createdAt:firebase.firestore.FieldValue.serverTimestamp()
+  });
+  closeModal('new-ledger-modal');
+}
+
+// ===== SETUP LEDGER UI =====
+function setupLedgerUI(){
+  if(!currentLedger) return;
+  document.getElementById('ledger-screen-title').textContent='📦 '+currentLedger.name;
+  document.getElementById('sum-party1-label').textContent=currentLedger.party1;
+  document.getElementById('sum-party2-label').textContent=currentLedger.party2;
+  document.getElementById('detail-party1-name').textContent=currentLedger.party1;
+  document.getElementById('detail-party2-name').textContent=currentLedger.party2;
+
+  // Merchant select
+  const ms=document.getElementById('f-merchant');
+  ms.innerHTML=`<option value="${currentLedger.party1}">${currentLedger.party1}</option><option value="${currentLedger.party2}">${currentLedger.party2}</option>`;
+  const es=document.getElementById('e-merchant');
+  es.innerHTML=ms.innerHTML;
+
+  // Currency select
+  const curs=currentLedger.currencies||[];
+  const csHTML=curs.map(c=>`<option value="${c}">${flags[c]||''} ${c}</option>`).join('');
+  document.getElementById('f-currency').innerHTML=csHTML;
+  document.getElementById('e-currency').innerHTML=csHTML;
+
+  // Rates grid
+  const ratesGrid=document.getElementById('ledger-rates-grid');
+  ratesGrid.innerHTML=curs.map(c=>{
+    const rate=currentLedger.rates?.[c]||defaultRates[c]||1;
+    const equiv=fmt4(rate>0?1/rate:0);
+    return `<div class="rate-card">
+      <div class="currency-name">${flags[c]||''} ${c}</div>
+      <label>1 USD =</label>
+      <input type="number" id="l-rate-${c}" value="${rate}" step="0.0001" oninput="updateLedgerRate('${c}')">
+      <div class="equiv" id="l-equiv-${c}">1 ${unitNames[c]||c} = $${equiv}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('f-date').valueAsDate=new Date();
+  document.getElementById('calc-preview').textContent='';
+}
+
+function updateLedgerRate(cur){
+  const rate=parseFloat(document.getElementById('l-rate-'+cur).value)||1;
+  document.getElementById('l-equiv-'+cur).textContent='1 '+(unitNames[cur]||cur)+' = $'+fmt4(rate>0?1/rate:0);
+  // Update in-memory rates
+  if(currentLedger) currentLedger.rates[cur]=rate;
+  renderLedger();
 }
 
 // ===== LEDGER CRUD =====
@@ -677,12 +796,10 @@ async function addLedgerEntry(){
     return;
   }
   setSyncing(true);
-  const name=userNames[currentUser.email]||currentUser.email.split('@')[0];
-  await userRef().collection('entries').add({
+  await ledgerRef().collection('entries').add({
     merchant,currency,amount,date,note,
     expr:/[+\-*/]/.test(raw)?raw:null,
     customRate:(!isNaN(cr)&&cr>0)?cr:null,
-    addedBy:name,
     createdAt:firebase.firestore.FieldValue.serverTimestamp()
   });
   document.getElementById('f-amount').value='';
@@ -694,7 +811,7 @@ async function addLedgerEntry(){
 async function deleteLedgerEntry(id){
   if(!confirm('تأكيد الحذف؟')) return;
   setSyncing(true);
-  await userRef().collection('entries').doc(id).delete();
+  await ledgerRef().collection('entries').doc(id).delete();
 }
 
 function openLedgerEdit(id){
@@ -719,7 +836,7 @@ async function saveLedgerEdit(){
   }
   const cr=parseFloat(String(document.getElementById('e-rate').value).replace(',','.'));
   setSyncing(true);
-  await userRef().collection('entries').doc(editingLedgerId).update({
+  await ledgerRef().collection('entries').doc(editingLedgerId).update({
     merchant:document.getElementById('e-merchant').value,
     currency:document.getElementById('e-currency').value,
     amount,date:document.getElementById('e-date').value,
@@ -732,29 +849,30 @@ async function saveLedgerEdit(){
 
 // ===== LEDGER PERIOD =====
 function calcLedgerSummary(){
-  let tA=0,tM=0;
-  const bdA={},bdM={};
+  const p1=currentLedger.party1, p2=currentLedger.party2;
+  let t1=0,t2=0; const bd1={},bd2={};
   ledgerEntries.forEach(e=>{
     const usd=toUSD(e.amount,e.currency,e.customRate);
-    if(e.merchant==='أيمن'){tA+=usd;bdA[e.currency]=(bdA[e.currency]||0)+e.amount;}
-    else{tM+=usd;bdM[e.currency]=(bdM[e.currency]||0)+e.amount;}
+    if(e.merchant===p1){t1+=usd;bd1[e.currency]=(bd1[e.currency]||0)+e.amount;}
+    else{t2+=usd;bd2[e.currency]=(bd2[e.currency]||0)+e.amount;}
   });
   if(carriedBalance?.amount){
-    if(carriedBalance.who==='أيمن') tA+=carriedBalance.amount;
-    else tM+=carriedBalance.amount;
+    if(carriedBalance.who===p1) t1+=carriedBalance.amount;
+    else t2+=carriedBalance.amount;
   }
-  return{tA,tM,diff:tA-tM,bdA,bdM};
+  return{t1,t2,diff:t1-t2,bd1,bd2};
 }
 
 function openClosePeriod(){
-  if(ledgerEntries.length===0&&!carriedBalance){alert('لا توجد بيانات');return;}
-  const{tA,tM,diff}=calcLedgerSummary();
-  const who=diff>0?'رصيد أيمن':diff<0?'رصيد ميرسي':'متساوي';
+  if(!ledgerEntries.length&&!carriedBalance){alert('لا توجد بيانات');return;}
+  const{t1,t2,diff}=calcLedgerSummary();
+  const p1=currentLedger.party1,p2=currentLedger.party2;
+  const who=diff>0?'رصيد '+p1:diff<0?'رصيد '+p2:'متساوي';
   const dc=diff===0?'var(--muted)':diff>0?'var(--negative)':'var(--positive)';
   document.getElementById('snapshot-preview').innerHTML=`
-    ${carriedBalance?.amount?`<div class="snapshot-row"><span class="snapshot-label">رصيد مُرحَّل سابق</span><span class="snapshot-val">$${fmt(carriedBalance.amount)}</span></div>`:''}
-    <div class="snapshot-row"><span class="snapshot-label">إجمالي أيمن</span><span class="snapshot-val" style="color:var(--ayman)">$${fmt(tA)}</span></div>
-    <div class="snapshot-row"><span class="snapshot-label">إجمالي ميرسي</span><span class="snapshot-val" style="color:var(--merci)">$${fmt(tM)}</span></div>
+    ${carriedBalance?.amount?`<div class="snapshot-row"><span class="snapshot-label">رصيد مُرحَّل</span><span class="snapshot-val">$${fmt(carriedBalance.amount)}</span></div>`:''}
+    <div class="snapshot-row"><span class="snapshot-label">إجمالي ${p1}</span><span class="snapshot-val" style="color:var(--ledger)">$${fmt(t1)}</span></div>
+    <div class="snapshot-row"><span class="snapshot-label">إجمالي ${p2}</span><span class="snapshot-val" style="color:var(--merci)">$${fmt(t2)}</span></div>
     <div class="snapshot-row"><span class="snapshot-label">الفرق</span><span class="snapshot-val" style="color:${dc}">$${fmt(Math.abs(diff))} — ${who}</span></div>
     <div class="snapshot-row"><span class="snapshot-label">الحوالات</span><span class="snapshot-val">${ledgerEntries.length}</span></div>`;
   settleChoice=null;
@@ -772,13 +890,19 @@ function setSettle(v){
 
 async function confirmClosePeriod(){
   if(settleChoice===null){alert('اختر هل تمت التسوية');return;}
-  const{tA,tM,diff,bdA,bdM}=calcLedgerSummary();
+  const{t1,t2,diff,bd1,bd2}=calcLedgerSummary();
   const name=document.getElementById('period-name').value.trim()||('فترة '+new Date().toLocaleDateString('ar-SA'));
-  const who=diff>0?'أيمن':diff<0?'ميرسي':'متساوي';
+  const p1=currentLedger.party1,p2=currentLedger.party2;
+  const who=diff>0?p1:diff<0?p2:'متساوي';
   const batch=db.batch();
-  batch.set(userRef().collection('periods').doc(),{name,tA,tM,diff,bdA,bdM,count:ledgerEntries.length,settled:settleChoice,carriedFrom:carriedBalance||null,closedAt:firebase.firestore.FieldValue.serverTimestamp()});
-  ledgerEntries.forEach(e=>batch.delete(userRef().collection('entries').doc(e.id)));
-  const cRef=userRef().collection('settings').doc('carried');
+  batch.set(ledgerRef().collection('periods').doc(),{
+    name,t1,t2,diff,bd1,bd2,party1:p1,party2:p2,
+    count:ledgerEntries.length,settled:settleChoice,
+    carriedFrom:carriedBalance||null,
+    closedAt:firebase.firestore.FieldValue.serverTimestamp()
+  });
+  ledgerEntries.forEach(e=>batch.delete(ledgerRef().collection('entries').doc(e.id)));
+  const cRef=ledgerRef().collection('settings').doc('carried');
   if(!settleChoice&&Math.abs(diff)>0) batch.set(cRef,{amount:Math.abs(diff),who});
   else batch.delete(cRef);
   setSyncing(true);
@@ -789,7 +913,7 @@ async function confirmClosePeriod(){
 async function resetLedger(){
   if(!confirm('تصفير كل الحوالات الحالية؟')) return;
   const batch=db.batch();
-  ledgerEntries.forEach(e=>batch.delete(userRef().collection('entries').doc(e.id)));
+  ledgerEntries.forEach(e=>batch.delete(ledgerRef().collection('entries').doc(e.id)));
   setSyncing(true);
   await batch.commit();
 }
@@ -804,56 +928,66 @@ function renderCarried(){
 }
 
 function renderLedger(){
+  if(!currentLedger) return;
+  const p1=currentLedger.party1,p2=currentLedger.party2;
   const tbody=document.getElementById('entries-body');
-  if(ledgerEntries.length===0){
-    tbody.innerHTML='<tr class="empty-row"><td colspan="9">لا توجد إدخالات بعد</td></tr>';
+  if(!ledgerEntries.length){
+    tbody.innerHTML='<tr class="empty-row"><td colspan="8">لا توجد إدخالات بعد</td></tr>';
   } else {
     tbody.innerHTML=ledgerEntries.map((e,i)=>{
       const usd=toUSD(e.amount,e.currency,e.customRate);
-      const isA=e.merchant==='أيمن';
       const expr=e.expr?`<span style="font-size:0.65rem;color:var(--muted);display:block;direction:ltr">${e.expr}</span>`:'';
       const rt=e.customRate?`<span style="font-size:0.65rem;color:var(--merci);display:block">@${e.customRate}</span>`:'';
       return `<tr>
         <td style="color:var(--muted);font-size:0.75rem">${i+1}</td>
-        <td><span class="merchant-tag ${isA?'tag-ayman':'tag-merci'}">${e.merchant}</span></td>
+        <td><span class="merchant-tag">${e.merchant}</span></td>
         <td style="font-weight:600;font-size:0.8rem">${flags[e.currency]||''} ${e.currency}</td>
         <td class="amount-cell">${fmt(e.amount)}${expr}${rt}</td>
         <td class="usd-cell">$${fmt(usd)}</td>
         <td style="color:var(--muted);font-size:0.78rem">${e.date||'—'}</td>
         <td style="color:var(--muted);font-size:0.78rem">${e.note||'—'}</td>
-        <td style="color:var(--muted);font-size:0.72rem">${e.addedBy||'—'}</td>
-        <td><button class="btn-edit" onclick="openLedgerEdit('${e.id}')">✏️</button><button class="btn-del" onclick="deleteLedgerEntry('${e.id}')">✕</button></td>
+        <td><button class="btn-edit-e" onclick="openLedgerEdit('${e.id}')">✏️</button><button class="btn-del" onclick="deleteLedgerEntry('${e.id}')">✕</button></td>
       </tr>`;
     }).join('');
   }
-  let tA=0,tM=0; const bdA={},bdM={};
+
+  let t1=0,t2=0; const bd1={},bd2={};
   ledgerEntries.forEach(e=>{
     const usd=toUSD(e.amount,e.currency,e.customRate);
-    if(e.merchant==='أيمن'){tA+=usd;bdA[e.currency]=(bdA[e.currency]||0)+e.amount;}
-    else{tM+=usd;bdM[e.currency]=(bdM[e.currency]||0)+e.amount;}
+    if(e.merchant===p1){t1+=usd;bd1[e.currency]=(bd1[e.currency]||0)+e.amount;}
+    else{t2+=usd;bd2[e.currency]=(bd2[e.currency]||0)+e.amount;}
   });
-  let tAF=tA,tMF=tM;
+  let t1f=t1,t2f=t2;
   if(carriedBalance?.amount){
-    if(carriedBalance.who==='أيمن') tAF+=carriedBalance.amount;
-    else tMF+=carriedBalance.amount;
+    if(carriedBalance.who===p1) t1f+=carriedBalance.amount;
+    else t2f+=carriedBalance.amount;
   }
-  document.getElementById('total-ayman').textContent='$'+fmt(tAF);
-  document.getElementById('total-merci').textContent='$'+fmt(tMF);
-  const diff=tAF-tMF;
+
+  document.getElementById('total-party1').textContent='$'+fmt(t1f);
+  document.getElementById('total-party2').textContent='$'+fmt(t2f);
+  const diff=t1f-t2f;
   const dEl=document.getElementById('diff-amount');
   const dNote=document.getElementById('diff-note');
   dEl.textContent='$'+fmt(Math.abs(diff));
-  if(diff>0){dEl.className='sum-total neg';dNote.textContent='رصيد أيمن';dNote.style.color='var(--negative)';}
-  else if(diff<0){dEl.className='sum-total pos';dNote.textContent='رصيد ميرسي';dNote.style.color='var(--positive)';}
+  if(diff>0){dEl.className='sum-total neg';dNote.textContent='رصيد '+p1;dNote.style.color='var(--negative)';}
+  else if(diff<0){dEl.className='sum-total pos';dNote.textContent='رصيد '+p2;dNote.style.color='var(--positive)';}
   else{dEl.className='sum-total neutral';dNote.textContent='متساوي ✓';dNote.style.color='var(--muted)';}
-  document.getElementById('breakdown-ayman').innerHTML=Object.entries(bdA).map(([c,v])=>`<span class="breakdown-item">${flags[c]} ${c}: ${fmt(v)}</span>`).join('');
-  document.getElementById('breakdown-merci').innerHTML=Object.entries(bdM).map(([c,v])=>`<span class="breakdown-item">${flags[c]} ${c}: ${fmt(v)}</span>`).join('');
-  ['ayman','merci'].forEach(who=>{
-    const data=who==='ayman'?bdA:bdM, total=who==='ayman'?tAF:tMF;
-    document.getElementById('detail-total-'+who).textContent='$'+fmt(total);
-    const el=document.getElementById('detail-'+who);
+
+  document.getElementById('breakdown-party1').innerHTML=Object.entries(bd1).map(([c,v])=>`<span class="breakdown-item">${flags[c]||''} ${c}: ${fmt(v)}</span>`).join('');
+  document.getElementById('breakdown-party2').innerHTML=Object.entries(bd2).map(([c,v])=>`<span class="breakdown-item">${flags[c]||''} ${c}: ${fmt(v)}</span>`).join('');
+
+  [[p1,'party1',bd1,t1f],[p2,'party2',bd2,t2f]].forEach(([name,key,data,total])=>{
+    document.getElementById('detail-total-'+key).textContent='$'+fmt(total);
+    const el=document.getElementById('detail-'+key);
+    const curs=currentLedger.currencies||[];
     if(!Object.keys(data).length){el.innerHTML='<div class="cur-empty">لا توجد بيانات</div>';return;}
-    el.innerHTML=lCurrencies.filter(c=>data[c]).map(c=>`<div class="cur-row"><span class="cur-flag">${flags[c]}</span><span class="cur-name">${c}</span><span class="cur-amount">${fmt(data[c])}</span><span class="cur-usd">≈ $${fmt(toUSD(data[c],c,null))}</span></div>`).join('');
+    el.innerHTML=curs.filter(c=>data[c]).map(c=>`
+      <div class="cur-row">
+        <span class="cur-flag">${flags[c]}</span>
+        <span class="cur-name">${c}</span>
+        <span class="cur-amount">${fmt(data[c])}</span>
+        <span class="cur-usd">≈ $${fmt(toUSD(data[c],c,null))}</span>
+      </div>`).join('');
   });
 }
 
@@ -863,39 +997,50 @@ function renderPeriods(){
   if(!ledgerPeriods.length){sec.style.display='none';return;}
   sec.style.display='block';
   list.innerHTML=ledgerPeriods.map(p=>{
-    const who=p.diff>0?'رصيد أيمن':p.diff<0?'رصيد ميرسي':'متساوي';
+    const who=p.diff>0?'رصيد '+p.party1:p.diff<0?'رصيد '+p.party2:'متساوي';
     const dc=p.diff===0?'var(--muted)':p.diff>0?'var(--negative)':'var(--positive)';
     const date=p.closedAt?.toDate?.()?.toLocaleDateString('ar-SA')||'';
     return `<div class="period-card">
       <div class="period-header"><div><div class="period-title">📦 ${p.name}</div><div class="period-date">${date} — ${p.count} حوالة ${p.settled?'✅':'↩️'}</div></div></div>
       <div class="period-grid">
-        <div class="period-item"><div class="period-item-label">أيمن</div><div class="period-item-val ayman">$${fmt(p.tA)}</div></div>
-        <div class="period-item"><div class="period-item-label">ميرسي</div><div class="period-item-val merci">$${fmt(p.tM)}</div></div>
+        <div class="period-item"><div class="period-item-label">${p.party1}</div><div class="period-item-val" style="color:var(--ledger)">$${fmt(p.t1)}</div></div>
+        <div class="period-item"><div class="period-item-label">${p.party2}</div><div class="period-item-val" style="color:var(--merci)">$${fmt(p.t2)}</div></div>
         <div class="period-item"><div class="period-item-label">الفرق</div><div class="period-item-val" style="color:${dc}">$${fmt(Math.abs(p.diff))}</div><div style="font-size:0.7rem;color:${dc};font-weight:700;">${who}</div></div>
       </div></div>`;
   }).join('');
 }
 
-// ===== DEBT CRUD =====
+// ===== DEBT =====
+function toggleDebtRates(){
+  const panel=document.getElementById('debt-rates-panel');
+  const btn=document.getElementById('rates-toggle-btn');
+  const open=panel.style.display==='none';
+  panel.style.display=open?'block':'none';
+  btn.textContent='⚙️ أسعار الصرف (مقابل الريال السعودي) '+(open?'▲':'▼');
+}
+
+function calcDebtorTotal(txs){
+  let total=0;
+  txs.forEach(tx=>{
+    const sar=toSAR(tx.amount,tx.currency);
+    if(tx.type==='debt') total+=sar;
+    else total-=sar;
+  });
+  return total;
+}
+
 function openNewDebtor(){
   document.getElementById('nd-name').value='';
   document.getElementById('nd-wa').value='';
   document.getElementById('nd-snap').value='';
   document.getElementById('new-debtor-modal').classList.add('open');
 }
-
 async function saveNewDebtor(){
   const name=document.getElementById('nd-name').value.trim();
   if(!name){alert('أدخل الاسم');return;}
-  await userRef().collection('debtors').add({
-    name,
-    whatsapp:document.getElementById('nd-wa').value.trim(),
-    snap:document.getElementById('nd-snap').value.trim(),
-    createdAt:firebase.firestore.FieldValue.serverTimestamp()
-  });
+  await userRef().collection('debtors').add({name,whatsapp:document.getElementById('nd-wa').value.trim(),snap:document.getElementById('nd-snap').value.trim(),createdAt:firebase.firestore.FieldValue.serverTimestamp()});
   closeModal('new-debtor-modal');
 }
-
 function openEditDebtor(id){
   const d=debtors.find(x=>x.id===id); if(!d) return;
   editingDebtorId=id;
@@ -904,16 +1049,10 @@ function openEditDebtor(id){
   document.getElementById('ed-snap').value=d.snap||'';
   document.getElementById('edit-debtor-modal').classList.add('open');
 }
-
 async function saveEditDebtor(){
-  await userRef().collection('debtors').doc(editingDebtorId).update({
-    name:document.getElementById('ed-name').value.trim(),
-    whatsapp:document.getElementById('ed-wa').value.trim(),
-    snap:document.getElementById('ed-snap').value.trim()
-  });
+  await userRef().collection('debtors').doc(editingDebtorId).update({name:document.getElementById('ed-name').value.trim(),whatsapp:document.getElementById('ed-wa').value.trim(),snap:document.getElementById('ed-snap').value.trim()});
   closeModal('edit-debtor-modal');
 }
-
 async function deleteDebtor(id){
   if(!confirm('حذف هذا المدين وكل معاملاته؟')) return;
   const txSnap=await userRef().collection('debtors').doc(id).collection('transactions').get();
@@ -922,7 +1061,6 @@ async function deleteDebtor(id){
   batch.delete(userRef().collection('debtors').doc(id));
   await batch.commit();
 }
-
 function openAddTx(debtorId){
   addTxDebtorId=debtorId;
   const d=debtors.find(x=>x.id===debtorId);
@@ -934,7 +1072,6 @@ function openAddTx(debtorId){
   document.getElementById('tx-note').value='';
   document.getElementById('add-tx-modal').classList.add('open');
 }
-
 async function saveDebtTx(){
   const amount=parseAmount(document.getElementById('tx-amount').value);
   if(!amount||isNaN(amount)||amount<=0){
@@ -945,29 +1082,26 @@ async function saveDebtTx(){
   const currency=document.getElementById('tx-currency').value;
   const sarAmount=toSAR(amount,currency);
   await userRef().collection('debtors').doc(addTxDebtorId).collection('transactions').add({
-    type:document.getElementById('tx-type').value,
-    currency, amount, sarAmount,
+    type:document.getElementById('tx-type').value,currency,amount,sarAmount,
     date:document.getElementById('tx-date').value,
     note:document.getElementById('tx-note').value.trim(),
     createdAt:firebase.firestore.FieldValue.serverTimestamp()
   });
   closeModal('add-tx-modal');
 }
-
 async function deleteTx(debtorId,txId){
   if(!confirm('حذف هذه المعاملة؟')) return;
   await userRef().collection('debtors').doc(debtorId).collection('transactions').doc(txId).delete();
 }
 
-// ===== RENDER DEBT =====
-function calcDebtorTotal(txs){
-  let total=0;
-  txs.forEach(tx=>{
-    const sar=toSAR(tx.amount,tx.currency);
-    if(tx.type==='debt') total+=sar;
-    else total-=sar;
+function setSortDebt(by){
+  debtSortBy=by;
+  ['name','amount','date'].forEach(k=>{
+    const btn=document.getElementById('sort-'+k);
+    if(k===by){btn.style.background='var(--debt-dim)';btn.style.color='var(--debt)';btn.style.borderColor='var(--debt)';}
+    else{btn.style.background='transparent';btn.style.color='var(--muted)';btn.style.borderColor='var(--border)';}
   });
-  return total;
+  renderDebtors();
 }
 
 function renderDebtors(){
@@ -980,11 +1114,9 @@ function renderDebtors(){
     document.getElementById('tdb-count').textContent='0';
     return;
   }
-
-  // ترتيب
-  const sorted = [...debtors].sort((a,b)=>{
+  const sorted=[...debtors].sort((a,b)=>{
     if(debtSortBy==='name') return a.name.localeCompare(b.name,'ar');
-    if(debtSortBy==='amount') return calcDebtorTotal(b.transactions||[]) - calcDebtorTotal(a.transactions||[]);
+    if(debtSortBy==='amount') return calcDebtorTotal(b.transactions||[])-calcDebtorTotal(a.transactions||[]);
     if(debtSortBy==='date'){
       const aT=a.transactions?.length?a.transactions[a.transactions.length-1].createdAt?.seconds||0:0;
       const bT=b.transactions?.length?b.transactions[b.transactions.length-1].createdAt?.seconds||0:0;
@@ -996,7 +1128,6 @@ function renderDebtors(){
   list.innerHTML=sorted.map(d=>{
     const total=calcDebtorTotal(d.transactions||[]);
     grandTotal+=Math.max(total,0);
-    const totalUSD=total/usdRate;
     const isPaid=total<=0;
     const contactBadges=[
       d.whatsapp?`<span class="contact-badge contact-wa">📱 واتساب</span>`:'',
@@ -1015,15 +1146,14 @@ function renderDebtors(){
     }).join('');
     const totalDebt=(d.transactions||[]).filter(t=>t.type==='debt').reduce((s,t)=>s+toSAR(t.amount,t.currency),0);
     const totalPaid=(d.transactions||[]).filter(t=>t.type==='payment').reduce((s,t)=>s+toSAR(t.amount,t.currency),0);
-
-    // تجميع العملات الأصلية
+    // Original currencies
     const origCurrencies={};
     (d.transactions||[]).forEach(tx=>{
       if(!origCurrencies[tx.currency]) origCurrencies[tx.currency]={debt:0,payment:0};
       if(tx.type==='debt') origCurrencies[tx.currency].debt+=tx.amount;
       else origCurrencies[tx.currency].payment+=tx.amount;
     });
-    const origLines = Object.entries(origCurrencies).map(([cur,v])=>{
+    const origLines=Object.entries(origCurrencies).map(([cur,v])=>{
       const net=v.debt-v.payment;
       if(net<=0) return '';
       return `<div style="font-size:0.95rem;font-weight:800;color:var(--negative);direction:ltr;">${fmt(net)} ${cur}</div>`;
@@ -1033,16 +1163,10 @@ function renderDebtors(){
       <div class="debtor-header" onclick="toggleDebtor('${d.id}')">
         <div class="debtor-info">
           <div class="debtor-avatar">${d.name.charAt(0)}</div>
-          <div>
-            <div class="debtor-name">${d.name}</div>
-            <div class="debtor-contact">${contactBadges}</div>
-          </div>
+          <div><div class="debtor-name">${d.name}</div><div class="debtor-contact">${contactBadges}</div></div>
         </div>
         <div class="debtor-totals">
-          ${isPaid
-            ? `<div class="debtor-total-sar paid">✅ مسدد</div>`
-            : `${origLines}<div style="font-size:0.75rem;color:var(--muted);direction:ltr;margin-top:2px;">${fmt(total)} ريال</div>`
-          }
+          ${isPaid?`<div class="debtor-total-sar paid">✅ مسدد</div>`:`${origLines}<div style="font-size:0.75rem;color:var(--muted);direction:ltr;margin-top:2px;">${fmt(total)} ريال</div>`}
         </div>
       </div>
       <div class="debtor-body" id="body-${d.id}">
@@ -1054,7 +1178,7 @@ function renderDebtors(){
             <div class="dsb-item"><div class="dsb-label">المتبقي</div><div class="dsb-val" style="color:${isPaid?'var(--positive)':'var(--negative)'}">${fmt(Math.max(total,0))} ريال</div></div>
           </div>
           <div class="debtor-actions">
-            <button class="btn-debtor-action edit-btn" onclick="openAddTx('${d.id}')">+ إضافة معاملة</button>
+            <button class="btn-debtor-action edit-btn" onclick="openAddTx('${d.id}')">+ معاملة</button>
             <button class="btn-debtor-action edit-btn" onclick="openEditDebtor('${d.id}')">✏️ تعديل</button>
             <button class="btn-debtor-action" onclick="deleteDebtor('${d.id}')">🗑️ حذف</button>
           </div>
@@ -1062,36 +1186,12 @@ function renderDebtors(){
       </div>
     </div>`;
   }).join('');
-
   document.getElementById('tdb-total').textContent=fmt(grandTotal)+' ريال';
   document.getElementById('tdb-usd').textContent='$'+fmt(grandTotal/usdRate);
   document.getElementById('tdb-count').textContent=debtors.length;
 }
 
-function toggleDebtor(id){
-  const b=document.getElementById('body-'+id);
-  b.classList.toggle('open');
-}
-
-function toggleDebtRates(){
-  const panel=document.getElementById('debt-rates-panel');
-  const btn=document.getElementById('rates-toggle-btn');
-  const open=panel.style.display==='none';
-  panel.style.display=open?'block':'none';
-  btn.textContent='⚙️ أسعار الصرف (مقابل الريال السعودي) '+(open?'▲':'▼');
-}
-
-let debtSortBy = 'name';
-
-function setSortDebt(by){
-  debtSortBy = by;
-  ['name','amount','date'].forEach(k=>{
-    const btn=document.getElementById('sort-'+k);
-    if(k===by){ btn.style.background='var(--ayman-dim)';btn.style.color='var(--ayman)';btn.style.borderColor='var(--ayman)'; }
-    else{ btn.style.background='transparent';btn.style.color='var(--muted)';btn.style.borderColor='var(--border)'; }
-  });
-  renderDebtors();
-}
+function toggleDebtor(id){document.getElementById('body-'+id).classList.toggle('open');}
 
 // ===== MODAL =====
 function closeModal(id){document.getElementById(id).classList.remove('open');}
