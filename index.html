@@ -292,6 +292,9 @@ tr:hover td{background:rgba(255,255,255,0.02);}
     <div class="section-header">
       <button class="btn-back" onclick="showHome()">→ رجوع</button>
       <h2>📦 سجلات الجرد</h2>
+      <div class="section-actions">
+        <button class="hbtn" onclick="openDistribute()" style="background:rgba(6,182,212,0.15);color:var(--ledger);border-color:var(--ledger);">⚡ إضافة موزعة</button>
+      </div>
     </div>
     <div class="ledgers-main">
       <button class="btn-new-ledger" onclick="openNewLedger()">+ إنشاء سجل جرد جديد</button>
@@ -510,6 +513,48 @@ tr:hover td{background:rgba(255,255,255,0.02);}
     <div class="form-group"><label>التاريخ</label><input type="date" id="tx-date"></div>
     <div class="form-group"><label>ملاحظة / سبب</label><input type="text" id="tx-note"></div>
     <div class="modal-actions"><button class="btn-save purple" onclick="saveDebtTx()">إضافة</button><button class="btn-cancel" onclick="closeModal('add-tx-modal')">إلغاء</button></div>
+  </div>
+</div>
+
+<!-- Modal: إضافة موزعة -->
+<div class="modal-overlay" id="distribute-modal">
+  <div class="modal">
+    <h3>⚡ إضافة موزعة على أجردة</h3>
+    <div class="form-group">
+      <label>الطرف (من تضيف عليه)</label>
+      <input type="text" id="dist-party" placeholder="مثال: أيمن">
+    </div>
+    <div class="form-group">
+      <label>العملة</label>
+      <select id="dist-currency">
+        <option value="SAR">🇸🇦 SAR</option>
+        <option value="QAR">🇶🇦 QAR</option>
+        <option value="AED">🇦🇪 AED</option>
+        <option value="KWD">🇰🇼 KWD</option>
+        <option value="OMR">🇴🇲 OMR</option>
+        <option value="USDT">💵 USDT</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>المبلغ</label>
+      <input type="text" id="dist-amount" placeholder="مثال: 100+500">
+    </div>
+    <div class="form-group">
+      <label>التاريخ</label>
+      <input type="date" id="dist-date">
+    </div>
+    <div class="form-group">
+      <label>ملاحظة</label>
+      <input type="text" id="dist-note" placeholder="اختياري...">
+    </div>
+    <div class="form-group">
+      <label>اختر الأجردة</label>
+      <div id="dist-ledgers-list" style="display:flex;flex-direction:column;gap:8px;margin-top:4px;"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-save" style="background:var(--ledger);" onclick="saveDistribute()">⚡ إضافة للكل</button>
+      <button class="btn-cancel" onclick="closeModal('distribute-modal')">إلغاء</button>
+    </div>
   </div>
 </div>
 
@@ -1192,6 +1237,77 @@ function renderDebtors(){
 }
 
 function toggleDebtor(id){document.getElementById('body-'+id).classList.toggle('open');}
+
+// ===== DISTRIBUTE =====
+function openDistribute(){
+  if(ledgersList.length < 2){ alert('تحتاج سجلين على الأقل'); return; }
+  document.getElementById('dist-party').value='';
+  document.getElementById('dist-currency').value='SAR';
+  document.getElementById('dist-amount').value='';
+  document.getElementById('dist-date').valueAsDate=new Date();
+  document.getElementById('dist-note').value='';
+
+  // عرض الأجردة مع checkbox
+  const list=document.getElementById('dist-ledgers-list');
+  list.innerHTML=ledgersList.map(l=>`
+    <label style="display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;cursor:pointer;">
+      <input type="checkbox" data-lid="${l.id}" data-p1="${l.party1}" data-p2="${l.party2}" data-curs='${JSON.stringify(l.currencies||[])}' data-rates='${JSON.stringify(l.rates||{})}' style="width:16px;height:16px;accent-color:var(--ledger);">
+      <div>
+        <div style="font-weight:700;font-size:0.88rem;">${l.name}</div>
+        <div style="font-size:0.75rem;color:var(--muted);">⚖️ ${l.party1} vs ${l.party2}</div>
+      </div>
+    </label>`).join('');
+
+  document.getElementById('distribute-modal').classList.add('open');
+}
+
+async function saveDistribute(){
+  const party=document.getElementById('dist-party').value.trim();
+  const currency=document.getElementById('dist-currency').value;
+  const raw=document.getElementById('dist-amount').value;
+  const amount=parseAmount(raw);
+  const date=document.getElementById('dist-date').value;
+  const note=document.getElementById('dist-note').value.trim();
+
+  if(!party){ alert('أدخل اسم الطرف'); return; }
+  if(!amount||isNaN(amount)||amount<=0){
+    document.getElementById('dist-amount').style.borderColor='var(--negative)';
+    setTimeout(()=>document.getElementById('dist-amount').style.borderColor='',1500);
+    return;
+  }
+
+  const checked=[...document.querySelectorAll('#dist-ledgers-list input[type=checkbox]:checked')];
+  if(!checked.length){ alert('اختر سجلاً واحداً على الأقل'); return; }
+
+  // التحقق إن الطرف موجود في الأجردة المختارة
+  const invalid=checked.filter(cb=>{
+    const p1=cb.dataset.p1, p2=cb.dataset.p2;
+    return party!==p1 && party!==p2;
+  });
+  if(invalid.length){
+    alert(`الطرف "${party}" غير موجود في بعض الأجردة المختارة`);
+    return;
+  }
+
+  setSyncing(true);
+  const batch=db.batch();
+  checked.forEach(cb=>{
+    const lid=cb.dataset.lid;
+    const rates=JSON.parse(cb.dataset.rates);
+    const curs=JSON.parse(cb.dataset.curs);
+    // لو العملة مو موجودة في الجرد استخدم السعر الافتراضي
+    const rate=rates[currency]||defaultRates[currency]||1;
+    const ref=userRef().collection('ledgers').doc(lid).collection('entries').doc();
+    batch.set(ref,{
+      merchant:party, currency, amount, date, note,
+      expr:/[+\-*/]/.test(raw)?raw:null,
+      customRate:null,
+      createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    });
+  });
+  await batch.commit();
+  closeModal('distribute-modal');
+}
 
 // ===== MODAL =====
 function closeModal(id){document.getElementById(id).classList.remove('open');}
