@@ -517,6 +517,26 @@ tr:hover td{background:rgba(255,255,255,0.02);}
   </div>
 </div>
 
+<!-- Modal: اختيار عملة الطباعة -->
+<div class="modal-overlay" id="print-currency-modal">
+  <div class="modal" style="max-width:340px;text-align:center;">
+    <h3>🖨️ اختر عملة الكشف</h3>
+    <p style="font-size:0.82rem;color:var(--muted);margin-bottom:16px;">سيتم تحويل جميع المبالغ للعملة المختارة</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;">
+      <div class="cur-check selected" data-pcur="SAR" onclick="selectPrintCur(this)">🇸🇦 SAR<br><span style="font-size:0.65rem;color:var(--muted);">ريال سعودي</span></div>
+      <div class="cur-check" data-pcur="USD" onclick="selectPrintCur(this)">💵 USD<br><span style="font-size:0.65rem;color:var(--muted);">دولار</span></div>
+      <div class="cur-check" data-pcur="QAR" onclick="selectPrintCur(this)">🇶🇦 QAR<br><span style="font-size:0.65rem;color:var(--muted);">ريال قطري</span></div>
+      <div class="cur-check" data-pcur="AED" onclick="selectPrintCur(this)">🇦🇪 AED<br><span style="font-size:0.65rem;color:var(--muted);">درهم</span></div>
+      <div class="cur-check" data-pcur="KWD" onclick="selectPrintCur(this)">🇰🇼 KWD<br><span style="font-size:0.65rem;color:var(--muted);">دينار</span></div>
+      <div class="cur-check" data-pcur="OMR" onclick="selectPrintCur(this)">🇴🇲 OMR<br><span style="font-size:0.65rem;color:var(--muted);">ريال عماني</span></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-save" onclick="confirmPrintDebtor()">🖨️ طباعة</button>
+      <button class="btn-cancel" onclick="closeModal('print-currency-modal')">إلغاء</button>
+    </div>
+  </div>
+</div>
+
 <!-- Modal: تعديل اسم السجل -->
 <div class="modal-overlay" id="edit-ledger-modal">
   <div class="modal">
@@ -1241,6 +1261,7 @@ function renderDebtors(){
           <div class="debtor-actions">
             <button class="btn-debtor-action edit-btn" onclick="openAddTx('${d.id}')">+ معاملة</button>
             <button class="btn-debtor-action edit-btn" onclick="openEditDebtor('${d.id}')">✏️ تعديل</button>
+            <button class="btn-debtor-action edit-btn" onclick="printDebtor('${d.id}')">🖨️ كشف</button>
             <button class="btn-debtor-action" onclick="deleteDebtor('${d.id}')">🗑️ حذف</button>
           </div>
         </div>
@@ -1282,6 +1303,144 @@ async function deleteLedger(id,name){
   batch.delete(userRef().collection('ledgers').doc(id).collection('settings').doc('carried'));
   batch.delete(userRef().collection('ledgers').doc(id));
   await batch.commit();
+}
+
+// ===== PRINT SINGLE DEBTOR =====
+let printDebtorId=null;
+
+function printDebtor(id){
+  printDebtorId=id;
+  // reset selection
+  document.querySelectorAll('[data-pcur]').forEach(el=>{
+    el.classList.toggle('selected', el.dataset.pcur==='SAR');
+  });
+  document.getElementById('print-currency-modal').classList.add('open');
+}
+
+function selectPrintCur(el){
+  document.querySelectorAll('[data-pcur]').forEach(e=>e.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function confirmPrintDebtor(){
+  const selEl=document.querySelector('[data-pcur].selected');
+  const printCur=selEl?selEl.dataset.pcur:'SAR';
+  closeModal('print-currency-modal');
+  doPrintDebtor(printDebtorId, printCur);
+}
+
+// أسعار الصرف للتحويل للعملة المختارة
+function toTargetCurrency(sarAmount, targetCur){
+  // SAR → target
+  if(targetCur==='SAR') return sarAmount;
+  const sarPerUSD = parseFloat(document.getElementById('d-rate-USD')?.value)||3.84;
+  const rateMap = {
+    USD: sarPerUSD,
+    QAR: parseFloat(document.getElementById('d-rate-QAR')?.value)||3.76 * (sarPerUSD/3.76),
+    AED: parseFloat(document.getElementById('d-rate-AED')?.value)||3.72 * (sarPerUSD/3.72),
+    KWD: (1/12.27)*sarPerUSD,
+    OMR: (1/9.67)*sarPerUSD,
+  };
+  // SAR to USD first, then USD to target
+  const usdAmount = sarAmount / sarPerUSD;
+  const targetRates = {
+    USD: 1,
+    QAR: parseFloat(document.getElementById('d-rate-QAR2')?.value)||3.76,
+    AED: parseFloat(document.getElementById('d-rate-AED2')?.value)||3.72,
+    KWD: 1/(parseFloat(document.getElementById('d-rate-KWD2')?.value)||0.313),
+    OMR: 1/(parseFloat(document.getElementById('d-rate-OMR2')?.value)||0.397),
+  };
+  // SAR → USD → target
+  const sarToUSD = 1/sarPerUSD;
+  const targetPerUSD = targetRates[targetCur]||1;
+  return sarAmount * sarToUSD * targetPerUSD;
+}
+
+const curSymbols={SAR:'ريال',USD:'$',QAR:'ريال ق',AED:'درهم',KWD:'دينار',OMR:'ريال ع'};
+const curNames={SAR:'ريال سعودي',USD:'دولار أمريكي',QAR:'ريال قطري',AED:'درهم إماراتي',KWD:'دينار كويتي',OMR:'ريال عماني'};
+
+function doPrintDebtor(id, printCur){
+  const d=debtors.find(x=>x.id===id); if(!d) return;
+  const sarPerUSD=parseFloat(document.getElementById('d-rate-USD')?.value)||3.84;
+
+  let totalSAR=0,totalDebtSAR=0,totalPaidSAR=0;
+  (d.transactions||[]).forEach(tx=>{
+    const sar=tx.sarAmount||toSAR(tx.amount,tx.currency);
+    if(tx.type==='debt'){totalSAR+=sar;totalDebtSAR+=sar;}
+    else{totalSAR-=sar;totalPaidSAR+=sar;}
+  });
+
+  const cv=v=>fmt(toTargetCurrency(v,printCur));
+  const sym=curSymbols[printCur]||printCur;
+  const isPaid=totalSAR<=0;
+  const date=new Date().toLocaleDateString('ar-SA');
+  const time=new Date().toLocaleTimeString('ar-SA',{hour:'2-digit',minute:'2-digit'});
+
+  let html=`<html dir="rtl"><head><meta charset="UTF-8">
+  <style>
+    body{font-family:'Tajawal',sans-serif;padding:28px;color:#000;max-width:600px;margin:0 auto;}
+    .header{text-align:center;border-bottom:2px solid #000;padding-bottom:14px;margin-bottom:20px;}
+    .header h1{font-size:1.5rem;font-weight:800;}
+    .header p{font-size:0.82rem;color:#555;margin-top:4px;}
+    .cur-label{display:inline-block;background:#e0f2fe;color:#0369a1;padding:3px 12px;border-radius:20px;font-size:0.78rem;font-weight:700;margin-top:6px;}
+    .name-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+    .debtor-name{font-size:1.2rem;font-weight:800;}
+    .contact{font-size:0.8rem;color:#555;}
+    .summary-box{background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:14px;margin-bottom:20px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;text-align:center;}
+    .s-label{font-size:0.72rem;color:#666;margin-bottom:3px;}
+    .s-val{font-size:1.1rem;font-weight:800;}
+    .s-val.debt{color:#dc2626;}
+    .s-val.paid-c{color:#16a34a;}
+    .s-val.remain{color:${isPaid?'#16a34a':'#dc2626'};}
+    table{width:100%;border-collapse:collapse;font-size:0.82rem;}
+    th{background:#f3f4f6;padding:7px 10px;text-align:right;border:1px solid #e5e7eb;font-weight:700;}
+    td{padding:7px 10px;border:1px solid #e5e7eb;}
+    .type-debt{color:#dc2626;font-weight:700;}
+    .type-pay{color:#16a34a;font-weight:700;}
+    .footer{margin-top:20px;text-align:center;font-size:0.75rem;color:#999;border-top:1px solid #e5e7eb;padding-top:12px;}
+    .status{display:inline-block;padding:4px 14px;border-radius:20px;font-size:0.85rem;font-weight:700;${isPaid?'background:#dcfce7;color:#16a34a;':'background:#fee2e2;color:#dc2626;'}}
+  </style></head><body>
+  <div class="header">
+    <h1>💰 كشف حساب</h1>
+    <p>${date} — ${time}</p>
+    <div class="cur-label">العملة: ${curNames[printCur]||printCur}</div>
+  </div>
+  <div class="name-row">
+    <div>
+      <div class="debtor-name">${d.name}</div>
+      <div class="contact">${d.whatsapp?'📱 '+d.whatsapp:''}${d.whatsapp&&d.snap?' | ':''}${d.snap?'👻 '+d.snap:''}</div>
+    </div>
+    <div class="status">${isPaid?'✅ مسدد':'⏳ لم يسدد'}</div>
+  </div>
+  <div class="summary-box">
+    <div><div class="s-label">إجمالي الدين</div><div class="s-val debt">${cv(totalDebtSAR)} ${sym}</div></div>
+    <div><div class="s-label">المسدد</div><div class="s-val paid-c">${cv(totalPaidSAR)} ${sym}</div></div>
+    <div><div class="s-label">المتبقي</div><div class="s-val remain">${cv(Math.max(totalSAR,0))} ${sym}</div></div>
+  </div>`;
+
+  if(d.transactions?.length){
+    html+=`<table><thead><tr><th>النوع</th><th>المبلغ الأصلي</th><th>بـ ${sym}</th><th>التاريخ</th><th>ملاحظة</th></tr></thead><tbody>`;
+    d.transactions.forEach(tx=>{
+      const sar=tx.sarAmount||toSAR(tx.amount,tx.currency);
+      const converted=toTargetCurrency(sar,printCur);
+      html+=`<tr>
+        <td class="${tx.type==='debt'?'type-debt':'type-pay'}">${tx.type==='debt'?'دين':'سداد'}</td>
+        <td style="direction:ltr;font-weight:600;">${fmt(tx.amount)} ${tx.currency}</td>
+        <td style="direction:ltr;">${fmt(converted)} ${sym}</td>
+        <td>${tx.date||'—'}</td>
+        <td>${tx.note||'—'}</td>
+      </tr>`;
+    });
+    html+=`</tbody></table>`;
+  } else {
+    html+=`<p style="text-align:center;color:#999;padding:20px;">لا توجد معاملات</p>`;
+  }
+
+  html+=`<div class="footer">محاسب — نظام إدارة الديون</div></body></html>`;
+  const w=window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+  w.print();
 }
 
 // ===== PRINT DEBT =====
