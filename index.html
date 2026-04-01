@@ -498,7 +498,7 @@ tr:hover td{background:rgba(255,255,255,0.02);}
   </div>
 </div>
 
-<!-- Modal: إضافة معاملة -->
+<!-- Modal: إضافة/تعديل معاملة -->
 <div class="modal-overlay" id="add-tx-modal">
   <div class="modal">
     <h3 id="add-tx-title">إضافة معاملة</h3>
@@ -513,7 +513,46 @@ tr:hover td{background:rgba(255,255,255,0.02);}
     <div class="form-group"><label>المبلغ</label><input type="text" id="tx-amount" placeholder="100+500"></div>
     <div class="form-group"><label>التاريخ</label><input type="date" id="tx-date"></div>
     <div class="form-group"><label>ملاحظة / سبب</label><input type="text" id="tx-note"></div>
+    <!-- إضافة لجرد -->
+    <div id="tx-ledger-section" style="background:var(--bg);border-radius:10px;padding:12px;margin-top:4px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <input type="checkbox" id="tx-add-to-ledger" style="width:16px;height:16px;accent-color:var(--ledger);" onchange="toggleTxLedger()">
+        <label for="tx-add-to-ledger" style="font-size:0.82rem;font-weight:600;color:var(--ledger);cursor:pointer;">📦 أضف أيضاً لسجل جرد</label>
+      </div>
+      <div id="tx-ledger-options" style="display:none;">
+        <div class="form-group" style="margin-bottom:8px;">
+          <label>السجل</label>
+          <select id="tx-ledger-id" onchange="updateTxLedgerParties()"></select>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label>الطرف في الجرد</label>
+          <select id="tx-ledger-party"></select>
+        </div>
+      </div>
+    </div>
     <div class="modal-actions"><button class="btn-save purple" onclick="saveDebtTx()">إضافة</button><button class="btn-cancel" onclick="closeModal('add-tx-modal')">إلغاء</button></div>
+  </div>
+</div>
+
+<!-- Modal: تعديل معاملة -->
+<div class="modal-overlay" id="edit-tx-modal">
+  <div class="modal">
+    <h3>✏️ تعديل المعاملة</h3>
+    <div class="form-group"><label>النوع</label><select id="etx-type"><option value="debt">دين 🔴</option><option value="payment">سداد 🟢</option></select></div>
+    <div class="form-group"><label>العملة</label>
+      <select id="etx-currency">
+        <option value="SAR">🇸🇦 SAR</option><option value="USD">💵 USD</option>
+        <option value="QAR">🇶🇦 QAR</option><option value="OMR">🇴🇲 OMR</option>
+        <option value="KWD">🇰🇼 KWD</option><option value="AED">🇦🇪 AED</option>
+      </select>
+    </div>
+    <div class="form-group"><label>المبلغ</label><input type="text" id="etx-amount"></div>
+    <div class="form-group"><label>التاريخ</label><input type="date" id="etx-date"></div>
+    <div class="form-group"><label>ملاحظة</label><input type="text" id="etx-note"></div>
+    <div class="modal-actions">
+      <button class="btn-save purple" onclick="saveEditTx()">💾 حفظ</button>
+      <button class="btn-cancel" onclick="closeModal('edit-tx-modal')">إلغاء</button>
+    </div>
   </div>
 </div>
 
@@ -1151,7 +1190,65 @@ function openAddTx(debtorId){
   document.getElementById('tx-amount').value='';
   document.getElementById('tx-date').valueAsDate=new Date();
   document.getElementById('tx-note').value='';
+  // reset ledger option
+  document.getElementById('tx-add-to-ledger').checked=false;
+  document.getElementById('tx-ledger-options').style.display='none';
+  // populate ledgers dropdown
+  const sel=document.getElementById('tx-ledger-id');
+  sel.innerHTML=ledgersList.map(l=>`<option value="${l.id}" data-p1="${l.party1}" data-p2="${l.party2}">${l.name}</option>`).join('');
+  if(ledgersList.length) updateTxLedgerParties();
   document.getElementById('add-tx-modal').classList.add('open');
+}
+
+function toggleTxLedger(){
+  const show=document.getElementById('tx-add-to-ledger').checked;
+  document.getElementById('tx-ledger-options').style.display=show?'block':'none';
+}
+
+function updateTxLedgerParties(){
+  const sel=document.getElementById('tx-ledger-id');
+  const opt=sel.options[sel.selectedIndex];
+  if(!opt) return;
+  const p1=opt.dataset.p1, p2=opt.dataset.p2;
+  document.getElementById('tx-ledger-party').innerHTML=
+    `<option value="${p1}">${p1}</option><option value="${p2}">${p2}</option>`;
+}
+
+// ===== EDIT TX =====
+let editingTxDebtorId=null, editingTxId=null;
+
+function openEditTx(debtorId, txId){
+  const d=debtors.find(x=>x.id===debtorId);
+  const tx=d?.transactions?.find(t=>t.id===txId);
+  if(!tx) return;
+  editingTxDebtorId=debtorId;
+  editingTxId=txId;
+  document.getElementById('etx-type').value=tx.type;
+  document.getElementById('etx-currency').value=tx.currency;
+  document.getElementById('etx-amount').value=tx.amount;
+  document.getElementById('etx-date').value=tx.date||'';
+  document.getElementById('etx-note').value=tx.note||'';
+  document.getElementById('edit-tx-modal').classList.add('open');
+}
+
+async function saveEditTx(){
+  const raw=document.getElementById('etx-amount').value;
+  const amount=parseAmount(raw);
+  if(!amount||isNaN(amount)||amount<=0){
+    document.getElementById('etx-amount').style.borderColor='var(--negative)';
+    setTimeout(()=>document.getElementById('etx-amount').style.borderColor='',1500);
+    return;
+  }
+  const currency=document.getElementById('etx-currency').value;
+  const sarAmount=toSAR(amount,currency);
+  await userRef().collection('debtors').doc(editingTxDebtorId)
+    .collection('transactions').doc(editingTxId).update({
+      type:document.getElementById('etx-type').value,
+      currency, amount, sarAmount,
+      date:document.getElementById('etx-date').value,
+      note:document.getElementById('etx-note').value.trim()
+    });
+  closeModal('edit-tx-modal');
 }
 async function saveDebtTx(){
   const amount=parseAmount(document.getElementById('tx-amount').value);
@@ -1162,12 +1259,31 @@ async function saveDebtTx(){
   }
   const currency=document.getElementById('tx-currency').value;
   const sarAmount=toSAR(amount,currency);
-  await userRef().collection('debtors').doc(addTxDebtorId).collection('transactions').add({
-    type:document.getElementById('tx-type').value,currency,amount,sarAmount,
-    date:document.getElementById('tx-date').value,
-    note:document.getElementById('tx-note').value.trim(),
-    createdAt:firebase.firestore.FieldValue.serverTimestamp()
-  });
+  const date=document.getElementById('tx-date').value;
+  const note=document.getElementById('tx-note').value.trim();
+  const type=document.getElementById('tx-type').value;
+
+  const batch=db.batch();
+
+  // إضافة المعاملة للمدين
+  const txRef=userRef().collection('debtors').doc(addTxDebtorId).collection('transactions').doc();
+  batch.set(txRef,{type,currency,amount,sarAmount,date,note,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+
+  // إضافة للجرد لو مختار
+  if(document.getElementById('tx-add-to-ledger').checked){
+    const ledgerId=document.getElementById('tx-ledger-id').value;
+    const merchant=document.getElementById('tx-ledger-party').value;
+    if(ledgerId&&merchant){
+      const entryRef=userRef().collection('ledgers').doc(ledgerId).collection('entries').doc();
+      batch.set(entryRef,{
+        merchant, currency, amount, date, note,
+        expr:null, customRate:null,
+        createdAt:firebase.firestore.FieldValue.serverTimestamp()
+      });
+    }
+  }
+
+  await batch.commit();
   closeModal('add-tx-modal');
 }
 async function deleteTx(debtorId,txId){
@@ -1222,6 +1338,7 @@ function renderDebtors(){
         <span class="debt-tx-sar">= ${fmt(sarAmt)} ريال</span>
         <span class="debt-tx-note">${tx.note||'—'}</span>
         <span class="debt-tx-date">${tx.date||'—'}</span>
+        <button class="btn-edit-e" onclick="openEditTx('${d.id}','${tx.id}')" style="font-size:0.8rem;">✏️</button>
         <button class="btn-del" onclick="deleteTx('${d.id}','${tx.id}')">✕</button>
       </div>`;
     }).join('');
