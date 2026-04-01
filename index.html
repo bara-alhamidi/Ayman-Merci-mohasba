@@ -1330,30 +1330,39 @@ function confirmPrintDebtor(){
 }
 
 // أسعار الصرف للتحويل للعملة المختارة
+// كل العملات أسعارها مقابل الريال السعودي في d-rate-XXX
+// الريال السعودي → دولار = ÷ d-rate-USD
+// عملة أخرى → ريال سعودي = × (d-rate-USD / d-rate-XXX_per_USD)
+// بالضبط: كل عملة لها سعرها مقابل الريال
+
+// d-rate-USD = كم ريال سعودي = 1 دولار → إذن 1 USD = 3.84 SAR
+// d-rate-QAR = كم ريال سعودي = 1 ريال قطري → إذن 1 QAR = 1.021 SAR
+// d-rate-AED = كم ريال سعودي = 1 درهم → إذن 1 AED = 1.032 SAR
+
+function toUSDfromSAR(sarAmount){
+  const rate=parseFloat(document.getElementById('d-rate-USD')?.value)||3.84;
+  return sarAmount/rate;
+}
+
+function fromUSDtoTarget(usdAmount, targetCur){
+  if(targetCur==='USD') return usdAmount;
+  const sarPerUSD=parseFloat(document.getElementById('d-rate-USD')?.value)||3.84;
+  const sarPerTarget={
+    SAR:1,
+    QAR:parseFloat(document.getElementById('d-rate-QAR')?.value)||1.021,
+    AED:parseFloat(document.getElementById('d-rate-AED')?.value)||1.032,
+    KWD:parseFloat(document.getElementById('d-rate-KWD')?.value)||12.27,
+    OMR:parseFloat(document.getElementById('d-rate-OMR')?.value)||9.67,
+  };
+  // USD → SAR → target
+  const sarAmount=usdAmount*sarPerUSD;
+  return sarAmount/(sarPerTarget[targetCur]||1);
+}
+
 function toTargetCurrency(sarAmount, targetCur){
-  // SAR → target
   if(targetCur==='SAR') return sarAmount;
-  const sarPerUSD = parseFloat(document.getElementById('d-rate-USD')?.value)||3.84;
-  const rateMap = {
-    USD: sarPerUSD,
-    QAR: parseFloat(document.getElementById('d-rate-QAR')?.value)||3.76 * (sarPerUSD/3.76),
-    AED: parseFloat(document.getElementById('d-rate-AED')?.value)||3.72 * (sarPerUSD/3.72),
-    KWD: (1/12.27)*sarPerUSD,
-    OMR: (1/9.67)*sarPerUSD,
-  };
-  // SAR to USD first, then USD to target
-  const usdAmount = sarAmount / sarPerUSD;
-  const targetRates = {
-    USD: 1,
-    QAR: parseFloat(document.getElementById('d-rate-QAR2')?.value)||3.76,
-    AED: parseFloat(document.getElementById('d-rate-AED2')?.value)||3.72,
-    KWD: 1/(parseFloat(document.getElementById('d-rate-KWD2')?.value)||0.313),
-    OMR: 1/(parseFloat(document.getElementById('d-rate-OMR2')?.value)||0.397),
-  };
-  // SAR → USD → target
-  const sarToUSD = 1/sarPerUSD;
-  const targetPerUSD = targetRates[targetCur]||1;
-  return sarAmount * sarToUSD * targetPerUSD;
+  const usd=toUSDfromSAR(sarAmount);
+  return fromUSDtoTarget(usd,targetCur);
 }
 
 const curSymbols={SAR:'ريال',USD:'$',QAR:'ريال ق',AED:'درهم',KWD:'دينار',OMR:'ريال ع'};
@@ -1419,14 +1428,14 @@ function doPrintDebtor(id, printCur){
   </div>`;
 
   if(d.transactions?.length){
-    html+=`<table><thead><tr><th>النوع</th><th>المبلغ الأصلي</th><th>بـ ${sym}</th><th>التاريخ</th><th>ملاحظة</th></tr></thead><tbody>`;
+    html+=`<table><thead><tr><th>النوع</th><th>المبلغ بـ ${sym}</th><th>التاريخ</th><th>ملاحظة</th></tr></thead><tbody>`;
     d.transactions.forEach(tx=>{
       const sar=tx.sarAmount||toSAR(tx.amount,tx.currency);
       const converted=toTargetCurrency(sar,printCur);
+      const sign=tx.type==='debt'?'+':'-';
       html+=`<tr>
         <td class="${tx.type==='debt'?'type-debt':'type-pay'}">${tx.type==='debt'?'دين':'سداد'}</td>
-        <td style="direction:ltr;font-weight:600;">${fmt(tx.amount)} ${tx.currency}</td>
-        <td style="direction:ltr;">${fmt(converted)} ${sym}</td>
+        <td style="direction:ltr;font-weight:700;">${sign}${fmt(converted)} ${sym}</td>
         <td>${tx.date||'—'}</td>
         <td>${tx.note||'—'}</td>
       </tr>`;
