@@ -486,7 +486,35 @@ tr:hover td{background:rgba(255,255,255,0.02);}
   <div class="modal">
     <h3>➕ إضافة مدين</h3>
     <div class="form-group"><label>الاسم</label><input type="text" id="nd-name" placeholder="اسم الشخص"></div>
-    <div class="form-group"><label>واتساب (اختياري)</label><input type="text" id="nd-wa" placeholder="+966xxxxxxxxx"></div>
+    <div class="form-group">
+      <label>واتساب (اختياري)</label>
+      <div style="display:flex;gap:6px;">
+        <select id="nd-wa-code" style="width:160px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:0.82rem;padding:7px 6px;">
+          <option value="+966">🇸🇦 السعودية +966</option>
+          <option value="+971">🇦🇪 الإمارات +971</option>
+          <option value="+965">🇰🇼 الكويت +965</option>
+          <option value="+968">🇴🇲 عُمان +968</option>
+          <option value="+974">🇶🇦 قطر +974</option>
+          <option value="+973">🇧🇭 البحرين +973</option>
+          <option value="+967">🇾🇪 اليمن +967</option>
+          <option value="+962">🇯🇴 الأردن +962</option>
+          <option value="+961">🇱🇧 لبنان +961</option>
+          <option value="+963">🇸🇾 سوريا +963</option>
+          <option value="+964">🇮🇶 العراق +964</option>
+          <option value="+20">🇪🇬 مصر +20</option>
+          <option value="+212">🇲🇦 المغرب +212</option>
+          <option value="+213">🇩🇿 الجزائر +213</option>
+          <option value="+216">🇹🇳 تونس +216</option>
+          <option value="+1">🇺🇸 أمريكا +1</option>
+          <option value="+44">🇬🇧 بريطانيا +44</option>
+          <option value="+91">🇮🇳 الهند +91</option>
+          <option value="+92">🇵🇰 باكستان +92</option>
+          <option value="+880">🇧🇩 بنغلاديش +880</option>
+          <option value="+251">🇪🇹 إثيوبيا +251</option>
+        </select>
+        <input type="text" id="nd-wa" placeholder="5XXXXXXXX" style="flex:1;direction:ltr;">
+      </div>
+    </div>
     <div class="form-group"><label>سناب (اختياري)</label><input type="text" id="nd-snap" placeholder="@username"></div>
     <div class="modal-actions"><button class="btn-save purple" onclick="saveNewDebtor()">إضافة</button><button class="btn-cancel" onclick="closeModal('new-debtor-modal')">إلغاء</button></div>
   </div>
@@ -497,8 +525,36 @@ tr:hover td{background:rgba(255,255,255,0.02);}
   <div class="modal">
     <h3>✏️ تعديل بيانات المدين</h3>
     <div class="form-group"><label>الاسم</label><input type="text" id="ed-name"></div>
-    <div class="form-group"><label>واتساب</label><input type="text" id="ed-wa"></div>
-    <div class="form-group"><label>سناب</label><input type="text" id="ed-snap"></div>
+    <div class="form-group">
+      <label>واتساب</label>
+      <div style="display:flex;gap:6px;">
+        <select id="ed-wa-code" style="width:160px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:0.82rem;padding:7px 6px;">
+          <option value="+966">🇸🇦 السعودية +966</option>
+          <option value="+971">🇦🇪 الإمارات +971</option>
+          <option value="+965">🇰🇼 الكويت +965</option>
+          <option value="+968">🇴🇲 عُمان +968</option>
+          <option value="+974">🇶🇦 قطر +974</option>
+          <option value="+973">🇧🇭 البحرين +973</option>
+          <option value="+967">🇾🇪 اليمن +967</option>
+          <option value="+962">🇯🇴 الأردن +962</option>
+          <option value="+961">🇱🇧 لبنان +961</option>
+          <option value="+963">🇸🇾 سوريا +963</option>
+          <option value="+964">🇮🇶 العراق +964</option>
+          <option value="+20">🇪🇬 مصر +20</option>
+          <option value="+212">🇲🇦 المغرب +212</option>
+          <option value="+213">🇩🇿 الجزائر +213</option>
+          <option value="+216">🇹🇳 تونس +216</option>
+          <option value="+1">🇺🇸 أمريكا +1</option>
+          <option value="+44">🇬🇧 بريطانيا +44</option>
+          <option value="+91">🇮🇳 الهند +91</option>
+          <option value="+92">🇵🇰 باكستان +92</option>
+          <option value="+880">🇧🇩 بنغلاديش +880</option>
+          <option value="+251">🇪🇹 إثيوبيا +251</option>
+        </select>
+        <input type="text" id="ed-wa" placeholder="5XXXXXXXX" style="flex:1;direction:ltr;">
+      </div>
+    </div>
+    <div class="form-group"><label>سناب</label><input type="text" id="ed-snap" placeholder="@username"></div>
     <div class="modal-actions"><button class="btn-save purple" onclick="saveEditDebtor()">💾 حفظ</button><button class="btn-cancel" onclick="closeModal('edit-debtor-modal')">إلغاء</button></div>
   </div>
 </div>
@@ -1163,19 +1219,44 @@ function openNewDebtor(){
 async function saveNewDebtor(){
   const name=document.getElementById('nd-name').value.trim();
   if(!name){alert('أدخل الاسم');return;}
-  await userRef().collection('debtors').add({name,whatsapp:document.getElementById('nd-wa').value.trim(),snap:document.getElementById('nd-snap').value.trim(),createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+  const waCode=document.getElementById('nd-wa-code').value;
+  const waNum=document.getElementById('nd-wa').value.trim().replace(/^0+/,'');
+  const whatsapp=waNum?(waCode+waNum):'';
+  await userRef().collection('debtors').add({
+    name, whatsapp,
+    snap:document.getElementById('nd-snap').value.trim(),
+    createdAt:firebase.firestore.FieldValue.serverTimestamp()
+  });
   closeModal('new-debtor-modal');
+  document.getElementById('nd-name').value='';
+  document.getElementById('nd-wa').value='';
+  document.getElementById('nd-snap').value='';
 }
 function openEditDebtor(id){
   const d=debtors.find(x=>x.id===id); if(!d) return;
   editingDebtorId=id;
   document.getElementById('ed-name').value=d.name;
-  document.getElementById('ed-wa').value=d.whatsapp||'';
+  // استخراج مفتاح الدولة والرقم
+  const wa=d.whatsapp||'';
+  const codes=['+966','+971','+965','+968','+974','+973','+967','+962','+961','+963','+964','+20','+212','+213','+216','+1','+44','+91','+92','+880','+251'];
+  let foundCode='+966', foundNum=wa;
+  for(const code of codes){
+    if(wa.startsWith(code)){foundCode=code;foundNum=wa.slice(code.length);break;}
+  }
+  document.getElementById('ed-wa-code').value=foundCode;
+  document.getElementById('ed-wa').value=foundNum;
   document.getElementById('ed-snap').value=d.snap||'';
   document.getElementById('edit-debtor-modal').classList.add('open');
 }
 async function saveEditDebtor(){
-  await userRef().collection('debtors').doc(editingDebtorId).update({name:document.getElementById('ed-name').value.trim(),whatsapp:document.getElementById('ed-wa').value.trim(),snap:document.getElementById('ed-snap').value.trim()});
+  const waCode=document.getElementById('ed-wa-code').value;
+  const waNum=document.getElementById('ed-wa').value.trim().replace(/^0+/,'');
+  const whatsapp=waNum?(waCode+waNum):'';
+  await userRef().collection('debtors').doc(editingDebtorId).update({
+    name:document.getElementById('ed-name').value.trim(),
+    whatsapp,
+    snap:document.getElementById('ed-snap').value.trim()
+  });
   closeModal('edit-debtor-modal');
 }
 async function deleteDebtor(id){
