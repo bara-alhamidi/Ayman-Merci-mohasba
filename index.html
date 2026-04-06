@@ -252,6 +252,10 @@ tr:hover td{background:rgba(255,255,255,0.02);}
     <div class="login-field"><label>كلمة المرور</label><input type="password" id="login-pass" placeholder="••••••" autocomplete="current-password"></div>
     <button class="btn-login" onclick="doLogin()">دخول</button>
     <div class="login-error" id="login-error">بيانات الدخول غير صحيحة</div>
+    <div class="login-success" id="login-success" style="color:var(--positive);font-size:0.82rem;text-align:center;margin-top:10px;display:none;"></div>
+    <div style="text-align:center;margin-top:14px;">
+      <a href="#" onclick="forgotPassword();return false;" style="color:var(--ayman);font-size:0.82rem;text-decoration:none;font-weight:600;">نسيت كلمة المرور؟</a>
+    </div>
   </div>
 </div>
 
@@ -752,6 +756,21 @@ async function doLogin(){
   catch(e){err.style.display='block';}
 }
 document.getElementById('login-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+async function forgotPassword(){
+  const email=document.getElementById('login-email').value.trim();
+  const err=document.getElementById('login-error');
+  const suc=document.getElementById('login-success');
+  err.style.display='none';suc.style.display='none';
+  if(!email){alert('أدخل الإيميل أولاً ثم اضغط نسيت كلمة المرور');return;}
+  try{
+    await auth.sendPasswordResetEmail(email);
+    suc.textContent='تم إرسال رابط إعادة تعيين كلمة المرور إلى '+email;
+    suc.style.display='block';
+  }catch(e){
+    err.textContent='تعذر إرسال رابط إعادة التعيين — تأكد من صحة الإيميل';
+    err.style.display='block';
+  }
+}
 function doLogout(){if(confirm('تسجيل الخروج؟'))auth.signOut();}
 
 // ===== NAVIGATION =====
@@ -894,7 +913,7 @@ function openNewLedger(){
   document.getElementById('nl-name').value='';
   document.getElementById('nl-party1').value='';
   document.getElementById('nl-party2').value='';
-  document.querySelectorAll('.cur-check').forEach(el=>el.classList.add('selected'));
+  document.querySelectorAll('#new-ledger-modal .cur-check').forEach(el=>el.classList.add('selected'));
   document.getElementById('new-ledger-modal').classList.add('open');
 }
 
@@ -903,17 +922,19 @@ async function saveNewLedger(){
   const party1=document.getElementById('nl-party1').value.trim();
   const party2=document.getElementById('nl-party2').value.trim();
   if(!name||!party1||!party2){alert('أدخل اسم السجل والطرفين');return;}
-  const currencies=[...document.querySelectorAll('.cur-check.selected')].map(el=>el.dataset.cur);
+  const currencies=[...document.querySelectorAll('#new-ledger-modal .cur-check.selected')].map(el=>el.dataset.cur);
   if(!currencies.length){alert('اختر عملة واحدة على الأقل');return;}
   const rates={};
   currencies.forEach(c=>{
     rates[c]=parseFloat(document.getElementById('nlr-'+c)?.value)||defaultRates[c]||1;
   });
-  await userRef().collection('ledgers').add({
-    name,party1,party2,currencies,rates,
-    createdAt:firebase.firestore.FieldValue.serverTimestamp()
-  });
-  closeModal('new-ledger-modal');
+  try{
+    await userRef().collection('ledgers').add({
+      name,party1,party2,currencies,rates,
+      createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    closeModal('new-ledger-modal');
+  }catch(e){alert('حدث خطأ أثناء الحفظ: '+e.message);}
 }
 
 // ===== SETUP LEDGER UI =====
