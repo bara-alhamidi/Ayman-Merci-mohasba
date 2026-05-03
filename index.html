@@ -319,7 +319,7 @@ tr:hover td{background:rgba(255,255,255,0.02);}
       <div class="section-actions">
         <button class="hbtn" onclick="openClosePeriod()" style="background:rgba(34,197,94,0.15);color:var(--positive);border-color:var(--positive);">📦 إغلاق الفترة</button>
         <button class="hbtn" onclick="resetLedger()" style="background:rgba(239,68,68,0.15);color:var(--negative);border-color:var(--negative);">🗑️ تصفير</button>
-        <button class="hbtn" onclick="window.print()" style="background:rgba(245,158,11,0.15);color:var(--merci);border-color:var(--merci);">🖨️ PDF</button>
+        <button class="hbtn" onclick="openLedgerPrintModal()" style="background:rgba(245,158,11,0.15);color:var(--merci);border-color:var(--merci);">🖨️ PDF</button>
       </div>
     </div>
     <div class="main">
@@ -481,6 +481,26 @@ tr:hover td{background:rgba(255,255,255,0.02);}
     <div class="modal-actions">
       <button class="btn-save green" onclick="confirmClosePeriod()">إغلاق وتصفير</button>
       <button class="btn-cancel" onclick="closeModal('close-period-modal')">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal: خيارات طباعة الجرد -->
+<div class="modal-overlay" id="ledger-print-modal">
+  <div class="modal" style="max-width:380px;">
+    <h3>🖨️ طباعة كشف الجرد</h3>
+    <p style="font-size:0.82rem;color:var(--muted);line-height:1.7;margin-bottom:14px;">سيتم إنشاء كشف مرتب بدون سجل الفترات المغلقة، مع تاريخ ووقت الطباعة والإجماليات وأسعار الصرف.</p>
+    <label style="display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;margin-bottom:14px;">
+      <input type="checkbox" id="ledger-print-detailed" checked style="width:18px;height:18px;accent-color:var(--merci);">
+      <div>
+        <div style="font-weight:700;font-size:0.9rem;">كشف مفصل</div>
+        <div style="font-size:0.75rem;color:var(--muted);">يعرض كل حوالة/مدخل مع التاريخ والملاحظة والسعر الخاص</div>
+      </div>
+    </label>
+    <div class="modal-actions">
+      <button class="btn-save" style="background:var(--merci);" onclick="doPrintLedger(document.getElementById('ledger-print-detailed').checked)">🖨️ طباعة</button>
+      <button class="btn-cancel" onclick="closeModal('ledger-print-modal')">إلغاء</button>
     </div>
   </div>
 </div>
@@ -1063,6 +1083,55 @@ function calcLedgerSummary(){
     else t2+=carriedBalance.amount;
   }
   return{t1,t2,diff:t1-t2,bd1,bd2};
+}
+
+
+function esc(v){return String(v??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));}
+function openLedgerPrintModal(){
+  if(!currentLedger){alert('افتح سجل جرد أولاً');return;}
+  document.getElementById('ledger-print-detailed').checked=true;
+  document.getElementById('ledger-print-modal').classList.add('open');
+}
+function doPrintLedger(detailed){
+  if(!currentLedger) return;
+  closeModal('ledger-print-modal');
+  const {t1,t2,diff,bd1,bd2}=calcLedgerSummary();
+  const p1=currentLedger.party1,p2=currentLedger.party2;
+  const who=diff>0?'رصيد '+p1:diff<0?'رصيد '+p2:'متساوي';
+  const diffClass=diff===0?'muted':diff>0?'bad':'good';
+  const printDate=new Date().toLocaleString('ar-SA',{dateStyle:'full',timeStyle:'short'});
+  const rateCards=(currentLedger.currencies||[]).map(c=>{
+    const rate=currentLedger.rates?.[c]||defaultRates[c]||1;
+    return `<div class="rate-card"><div class="rate-cur">${flags[c]||''} ${esc(c)}</div><div class="rate-main">1 USD = ${fmt4(rate)} ${esc(unitNames[c]||c)}</div><div class="rate-sub">1 ${esc(unitNames[c]||c)} = $${fmt4(rate>0?1/rate:0)}</div></div>`;
+  }).join('')||'<div class="empty">لا توجد عملات محددة</div>';
+  const bdHtml=(bd,accent)=>Object.entries(bd).map(([c,v])=>`<span class="chip ${accent}">${flags[c]||''} ${esc(c)}: ${fmt(v)}</span>`).join('')||'<span class="chip muted">لا توجد مبالغ</span>';
+  const carriedHtml=carriedBalance?.amount?`<div class="notice">رصيد مُرحّل: <strong>$${fmt(carriedBalance.amount)}</strong> لصالح ${esc(carriedBalance.who)}</div>`:'';
+  const entriesHtml=detailed?`
+    <section>
+      <h2>الحوالات / المدخلات الحالية</h2>
+      ${ledgerEntries.length?`<table><thead><tr><th>#</th><th>الطرف</th><th>العملة</th><th>المبلغ</th><th>بالدولار</th><th>السعر</th><th>التاريخ</th><th>ملاحظة</th></tr></thead><tbody>
+      ${ledgerEntries.map((e,i)=>{
+        const usd=toUSD(e.amount,e.currency,e.customRate);
+        return `<tr><td>${i+1}</td><td>${esc(e.merchant)}</td><td>${flags[e.currency]||''} ${esc(e.currency)}</td><td class="num">${fmt(e.amount)}${e.expr?`<small>${esc(e.expr)}</small>`:''}</td><td class="num">$${fmt(usd)}</td><td>${e.customRate?esc(e.customRate):'افتراضي'}</td><td>${esc(e.date||'—')}</td><td>${esc(e.note||'—')}</td></tr>`;
+      }).join('')}
+      </tbody></table>`:'<div class="empty">لا توجد حوالات حالية</div>'}
+    </section>`:'';
+  const html=`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>كشف جرد - ${esc(currentLedger.name)}</title>
+  <style>
+    @page{size:A4;margin:12mm}*{box-sizing:border-box}body{font-family:'Tajawal','Arial',sans-serif;color:#0f172a;background:#fff;margin:0;line-height:1.5}.wrap{max-width:1000px;margin:0 auto}.hero{background:linear-gradient(135deg,#0f172a,#164e63);color:#fff;border-radius:18px;padding:24px;margin-bottom:16px;display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.hero h1{margin:0 0 8px;font-size:28px}.meta{font-size:13px;color:#cbd5e1}.badge{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:12px;padding:10px 14px;text-align:center;min-width:140px}.badge strong{display:block;font-size:20px}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}.card{border:1px solid #e2e8f0;border-radius:14px;padding:14px;background:#f8fafc}.label{font-size:12px;color:#64748b;font-weight:700;margin-bottom:4px}.amount{font-size:24px;font-weight:800;direction:ltr;text-align:left}.ledger{color:#0891b2}.merci{color:#d97706}.good{color:#16a34a}.bad{color:#dc2626}.muted{color:#64748b}.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.chip{border-radius:999px;padding:4px 9px;font-size:12px;background:#f1f5f9;border:1px solid #e2e8f0}.chip.ledger{color:#0891b2;background:#ecfeff}.chip.merci{color:#d97706;background:#fffbeb}section{margin-top:16px;break-inside:avoid}h2{font-size:17px;margin:0 0 10px;padding-bottom:6px;border-bottom:2px solid #e2e8f0}.rates{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.rate-card{border:1px solid #bae6fd;background:#f0f9ff;border-radius:12px;padding:10px}.rate-cur{font-weight:800;color:#0369a1}.rate-main{font-size:13px;margin-top:4px}.rate-sub{font-size:12px;color:#64748b;direction:ltr;text-align:left}table{width:100%;border-collapse:collapse;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;font-size:12px}th{background:#0f172a;color:#fff;text-align:right;padding:9px}td{border-bottom:1px solid #e2e8f0;padding:8px;vertical-align:top}tr:nth-child(even) td{background:#f8fafc}.num{direction:ltr;text-align:left;font-weight:700}small{display:block;color:#64748b;font-weight:400}.notice{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:12px;padding:10px 12px;margin:10px 0}.empty{border:1px dashed #cbd5e1;border-radius:12px;padding:14px;text-align:center;color:#64748b}.footer{margin-top:18px;color:#64748b;font-size:11px;text-align:center}@media print{.wrap{max-width:none}.hero,.card,.rate-card,section{break-inside:avoid}}
+  </style></head><body><div class="wrap">
+    <div class="hero"><div><h1>📦 كشف جرد</h1><div class="meta">السجل: ${esc(currentLedger.name)}<br>الأطراف: ${esc(p1)} × ${esc(p2)}<br>تاريخ الطباعة: ${esc(printDate)}</div></div><div class="badge"><span>عدد الحوالات</span><strong>${ledgerEntries.length}</strong></div></div>
+    ${carriedHtml}
+    <section><h2>الإجمالي والصافي</h2><div class="cards"><div class="card"><div class="label">إجمالي ${esc(p1)}</div><div class="amount ledger">$${fmt(t1)}</div><div class="chips">${bdHtml(bd1,'ledger')}</div></div><div class="card"><div class="label">إجمالي ${esc(p2)}</div><div class="amount merci">$${fmt(t2)}</div><div class="chips">${bdHtml(bd2,'merci')}</div></div><div class="card"><div class="label">صافي الفرق</div><div class="amount ${diffClass}">$${fmt(Math.abs(diff))}</div><div class="chips"><span class="chip ${diffClass}">${esc(who)}</span></div></div></div></section>
+    ${entriesHtml}
+    <section><h2>أسعار الصرف المستخدمة</h2><div class="rates">${rateCards}</div></section>
+    <div class="footer">ملاحظة: سجل الفترات المغلقة غير مدرج في هذا الكشف حسب إعداد الطباعة.</div>
+  </div></body></html>`;
+  const w=window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+  w.focus();
+  setTimeout(()=>w.print(),300);
 }
 
 function openClosePeriod(){
